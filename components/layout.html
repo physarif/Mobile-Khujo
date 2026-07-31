@@ -129,15 +129,12 @@
             <{{hero_tag}} class="m-0 leading-none">
                 <a href="/" class="flex items-center">
                     <span class="text-2xl" style="font-family:'Baloo 2', sans-serif; font-weight:800;">
-                        <span style="color:#1e90ff;">Mobile</span><span class="text-gray-400 dark:text-gray-500">Khujo</span>
+                        <span style="color:#1e90ff;">Mobile</span><span class="text-gray-900 dark:text-gray-100">Khujo</span>
                     </span>
                 </a>
             </{{hero_tag}}>
 
             <div class="flex items-center gap-4">
-                <button id="theme-toggle" aria-label="ডার্ক মোড" class="text-gray-700 dark:text-gray-200 text-lg w-9 h-9 flex items-center justify-center">
-                    <i class="fas fa-moon"></i>
-                </button>
                 <a href="/search.html" aria-label="সার্চ" class="text-gray-700 dark:text-gray-200 text-lg w-9 h-9 flex items-center justify-center">
                     <i class="fas fa-search"></i>
                 </a>
@@ -147,16 +144,11 @@
 
     <script>
     (function() {
+        // ডার্ক মোড টগল বাটন এখন sidebar-এ যাবে (পরে যুক্ত হবে) —
+        // এখানে শুধু আগে থেকে সেভ করা preference apply করা হচ্ছে
         var root = document.documentElement;
-        var toggle = document.getElementById('theme-toggle');
         var stored = localStorage.getItem('mk-theme');
         if (stored === 'dark') root.classList.add('dark');
-        if (toggle) {
-            toggle.addEventListener('click', function() {
-                root.classList.toggle('dark');
-                localStorage.setItem('mk-theme', root.classList.contains('dark') ? 'dark' : 'light');
-            });
-        }
     })();
     </script>
 
