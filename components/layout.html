@@ -120,8 +120,10 @@
 <body class="bg-gray-50 text-gray-800 dark:bg-[#1a1a1b] dark:text-gray-200 flex flex-col min-h-screen">
 
     <!-- HEADER -->
-    <header class="bg-white dark:bg-[#1a1a1b] border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
-        <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+    <header class="bg-white/90 dark:bg-[#1a1a1b]/90 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
+
+        <!-- Normal header row -->
+        <div id="header-default-row" class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
             <button id="menu-toggle" aria-label="Menu" class="text-gray-700 dark:text-gray-200 text-xl w-9 h-9 flex items-center justify-center">
                 <i class="fas fa-bars"></i>
             </button>
@@ -135,10 +137,19 @@
             </{{hero_tag}}>
 
             <div class="flex items-center gap-4">
-                <a href="/search.html" aria-label="Search" class="text-gray-700 dark:text-gray-200 text-lg w-9 h-9 flex items-center justify-center">
+                <button id="search-open" aria-label="Search" class="text-gray-700 dark:text-gray-200 text-lg w-9 h-9 flex items-center justify-center">
                     <i class="fas fa-search"></i>
-                </a>
+                </button>
             </div>
+        </div>
+
+        <!-- Inline search row (hidden by default) -->
+        <div id="header-search-row" class="hidden max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
+            <input id="search-input" type="text" placeholder="Search..." autocomplete="off"
+                   class="flex-1 min-w-0 bg-transparent border-none outline-none text-lg text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500">
+            <button id="search-close" aria-label="Close search" class="text-gray-700 dark:text-gray-200 text-xl w-9 h-9 flex items-center justify-center shrink-0">
+                <i class="fas fa-xmark"></i>
+            </button>
         </div>
     </header>
 
@@ -149,6 +160,37 @@
         var root = document.documentElement;
         var stored = localStorage.getItem('mk-theme');
         if (stored === 'dark') root.classList.add('dark');
+    })();
+
+    // সার্চ আইকনে ট্যাপ করলে header-এ search box খুলবে (screenshot অনুযায়ী)
+    (function() {
+        var defaultRow = document.getElementById('header-default-row');
+        var searchRow  = document.getElementById('header-search-row');
+        var openBtn    = document.getElementById('search-open');
+        var closeBtn   = document.getElementById('search-close');
+        var input      = document.getElementById('search-input');
+
+        function openSearch() {
+            defaultRow.classList.add('hidden');
+            searchRow.classList.remove('hidden');
+            input.focus();
+        }
+        function closeSearch() {
+            searchRow.classList.add('hidden');
+            defaultRow.classList.remove('hidden');
+            input.value = '';
+        }
+
+        if (openBtn) openBtn.addEventListener('click', openSearch);
+        if (closeBtn) closeBtn.addEventListener('click', closeSearch);
+        if (input) {
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && input.value.trim()) {
+                    window.location.href = '/search.html?q=' + encodeURIComponent(input.value.trim());
+                }
+                if (e.key === 'Escape') closeSearch();
+            });
+        }
     })();
     </script>
 
