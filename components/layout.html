@@ -294,6 +294,39 @@
             });
         });
     })();
+
+    // স্ক্রল করলে header hide/show হবে — নিচে স্ক্রল করলে hide, উপরে স্ক্রল করলে show
+    (function() {
+        var header = document.getElementById('site-header');
+        if (!header) return;
+        header.style.transition = 'transform 0.25s ease';
+        var lastScrollY = window.scrollY;
+        var ticking = false;
+
+        function onScroll() {
+            var currentScrollY = window.scrollY;
+
+            if (currentScrollY <= 0) {
+                header.style.transform = 'translateY(0)';
+            } else if (currentScrollY > lastScrollY) {
+                // নিচের দিকে স্ক্রল হচ্ছে
+                header.style.transform = 'translateY(-100%)';
+            } else {
+                // উপরের দিকে স্ক্রল হচ্ছে
+                header.style.transform = 'translateY(0)';
+            }
+
+            lastScrollY = currentScrollY;
+            ticking = false;
+        }
+
+        window.addEventListener('scroll', function() {
+            if (!ticking) {
+                requestAnimationFrame(onScroll);
+                ticking = true;
+            }
+        }, { passive: true });
+    })();
     </script>
 
     <!-- MAIN CONTENT -->
