@@ -1,0 +1,51 @@
+name: Build & Deploy Mobile Khujo
+
+on:
+  repository_dispatch:
+    types: [firebase-update]
+  push:
+    branches: [main]
+    paths:
+      - 'components/**'
+      - 'scripts/**'
+  workflow_dispatch:
+
+# একসাথে একাধিক trigger আসলে চলমান build বাতিল করে নতুনটা চালাবে
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ১. Repo checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ২. Node.js setup
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # ৩. Dependencies install
+      - name: Install dependencies
+        run: npm install firebase-admin wrangler
+
+      # ৪. Firebase থেকে data fetch + homepage generate
+      - name: Generate static pages
+        env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
+          FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
+          FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
+        run: node scripts/generate_pages.js
+
+      # ৫. Cloudflare Pages এ deploy
+      - name: Deploy to Cloudflare Pages
+        run: npx wrangler pages deploy . --project-name=mobile-khujo --commit-dirty=true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
