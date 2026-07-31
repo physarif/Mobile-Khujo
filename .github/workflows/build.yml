@@ -45,7 +45,7 @@ jobs:
 
       # ৫. Cloudflare Pages এ deploy
       - name: Deploy to Cloudflare Pages
-        run: npx wrangler pages deploy . --project-name=mobile-khujo --commit-dirty=true
+        run: npx wrangler pages deploy . --project-name=mobilekhujo --commit-dirty=true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
