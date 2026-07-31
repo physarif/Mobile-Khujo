@@ -451,4 +451,71 @@
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">বাংলাদেশের মোবাইল রিভিউ ও তুলনা প্ল্যাটফর্ম।</p>
             </div>
             <!-- Social icons -->
-            <di
+            <div class="flex items-center gap-2">
+                <a href="https://facebook.com/mobilekhujo" target="_blank" rel="noopener" aria-label="Facebook"
+                   class="w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-[#2a2a2a] flex items-center justify-center text-[#1877f2] hover:border-[#1877f2] transition-all">
+                    <i class="fab fa-facebook-f text-lg"></i>
+                </a>
+                <a href="https://t.me/mobilekhujo" target="_blank" rel="noopener" aria-label="Telegram"
+                   class="w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-[#2a2a2a] flex items-center justify-center text-[#229ed9] hover:border-[#229ed9] transition-all">
+                    <i class="fab fa-telegram-plane text-lg"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="max-w-3xl mx-auto px-5">
+            <div class="border-t border-gray-300 dark:border-gray-700"></div>
+        </div>
+
+        <!-- Dot-separated links — mobile: wrap, desktop: single row -->
+        <div class="max-w-3xl mx-auto px-5 py-3 flex flex-wrap md:flex-nowrap items-center justify-between gap-y-2">
+            <!-- Links -->
+            <div class="flex flex-wrap md:flex-nowrap items-center gap-y-1">
+                <a href="/about" class="footer-dot-link">সম্পর্কে</a>
+                <span class="footer-dot">·</span>
+                <a href="/contact" class="footer-dot-link">যোগাযোগ</a>
+                <span class="footer-dot">·</span>
+                <a href="/policy" class="footer-dot-link">শর্তাবলী</a>
+            </div>
+
+            <!-- Visit counter -->
+            <span id="mk-visit-counter" class="mk-visit-pill"><i class="fa-solid fa-arrow-trend-up"></i> <b>**</b> <span class="mk-sep">|</span> <b>**</b></span>
+
+        </div>
+
+    </footer>
+
+    <script>
+        // Visit counter — প্রতি পেজ লোড/রিফ্রেশে count বাড়বে
+        (function () {
+            const el = document.getElementById('mk-visit-counter');
+            if (!el) return;
+            const bnDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+            const toBn = n => String(n).split('').map(d => bnDigits[d] !== undefined ? bnDigits[d] : d).join('');
+            const nums = el.querySelectorAll('b');
+            fetch('/api/visits')
+                .then(r => r.json())
+                .then(data => {
+                    nums[0].textContent = toBn(data.today);
+                    nums[1].textContent = toBn(data.total);
+                })
+                .catch(() => { el.style.display = 'none'; });
+        })();
+    </script>
+
+    <script>
+        // Search
+        function doSearch(query) {
+            if (query.trim()) {
+                window.location.href = '/search.html?q=' + encodeURIComponent(query.trim());
+            }
+        }
+        const mainInput = document.getElementById('main-search-input');
+        document.getElementById('main-search-btn').addEventListener('click', () => doSearch(mainInput.value));
+        mainInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(mainInput.value); });
+    </script>
+
+
+</body>
+</html>
