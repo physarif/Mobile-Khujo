@@ -120,7 +120,7 @@
 <body class="bg-gray-50 text-gray-800 dark:bg-[#1a1a1b] dark:text-gray-200 flex flex-col min-h-screen">
 
     <!-- HEADER -->
-    <header class="bg-white/90 dark:bg-[#1a1a1b]/90 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
+    <header class="bg-white/90 dark:bg-[#1a1a1b]/90 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
 
         <!-- Normal header row -->
         <div id="header-default-row" class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -155,10 +155,10 @@
 
     <!-- SIDEBAR -->
     <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/50 z-30"></div>
-    <aside id="sidebar" class="fixed top-0 left-0 h-full w-[68%] max-w-[280px] bg-white dark:bg-[#1a1a1b] z-40 transform -translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-xl">
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-[68%] max-w-[280px] z-40 transform -translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-xl">
 
         <!-- Sidebar header: logo + close -->
-        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+        <div class="bg-white dark:bg-[#1a1a1b] flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
             <a href="/" class="flex items-center">
                 <span class="text-2xl" style="font-family:'Fredoka', sans-serif; font-weight:700;">
                     <span style="color:#1e90ff;">Mobile</span><span class="text-gray-700 dark:text-gray-200">Khujo</span>
@@ -170,7 +170,7 @@
         </div>
 
         <!-- Menu items -->
-        <nav class="flex-1 overflow-y-auto px-4">
+        <nav class="flex-1 overflow-y-auto px-4 bg-white/90 dark:bg-[#1a1a1b]/90">
             <div class="border-b border-gray-100 dark:border-gray-800">
                 <button type="button" class="sidebar-accordion-toggle w-full flex items-center justify-between py-3 text-gray-800 dark:text-gray-100 text-base font-medium">
                     Archive
@@ -195,7 +195,7 @@
         </nav>
 
         <!-- Sidebar footer: social icons + legal links -->
-        <div class="px-4 py-4 border-t border-gray-200 dark:border-gray-700">
+        <div class="bg-white/90 dark:bg-[#1a1a1b]/90 px-4 py-4 border-t border-gray-200 dark:border-gray-700">
             <div class="flex items-center gap-3 mb-3">
                 <a href="https://facebook.com/mobilekhujo" target="_blank" rel="noopener" aria-label="Facebook"
                    class="w-9 h-9 rounded-full bg-gray-100 dark:bg-[#2a2a2a] flex items-center justify-center text-[#1877f2]">
