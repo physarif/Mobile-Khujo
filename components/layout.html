@@ -153,6 +153,67 @@
         </div>
     </header>
 
+    <!-- SIDEBAR -->
+    <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/50 z-30"></div>
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-[68%] max-w-[280px] bg-white dark:bg-[#1a1a1b] z-40 transform -translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-xl">
+
+        <!-- Sidebar header: logo + close -->
+        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+            <a href="/" class="flex items-center">
+                <span class="text-2xl" style="font-family:'Fredoka', sans-serif; font-weight:700;">
+                    <span style="color:#1e90ff;">Mobile</span><span class="text-gray-700 dark:text-gray-200">Khujo</span>
+                </span>
+            </a>
+            <button id="sidebar-close" aria-label="Close menu" class="text-gray-700 dark:text-gray-200 text-xl w-9 h-9 flex items-center justify-center">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Menu items -->
+        <nav class="flex-1 overflow-y-auto px-4">
+            <div class="border-b border-gray-100 dark:border-gray-800">
+                <button type="button" class="sidebar-accordion-toggle w-full flex items-center justify-between py-3 text-gray-800 dark:text-gray-100 text-base font-medium">
+                    Archive
+                    <i class="fas fa-chevron-down text-sm text-gray-400 transition-transform"></i>
+                </button>
+                <ul class="sidebar-accordion-panel hidden pb-2 pl-2 space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                    {{archive_links}}
+                </ul>
+            </div>
+
+            <div class="border-b border-gray-100 dark:border-gray-800">
+                <button type="button" class="sidebar-accordion-toggle w-full flex items-center justify-between py-3 text-gray-800 dark:text-gray-100 text-base font-medium">
+                    Brands
+                    <i class="fas fa-chevron-down text-sm text-gray-400 transition-transform"></i>
+                </button>
+                <ul class="sidebar-accordion-panel hidden pb-2 pl-2 space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                    {{brand_links}}
+                </ul>
+            </div>
+
+            <a href="/sitemap.html" class="block py-3 text-gray-800 dark:text-gray-100 text-base font-medium border-b border-gray-100 dark:border-gray-800">Sitemap</a>
+        </nav>
+
+        <!-- Sidebar footer: social icons + legal links -->
+        <div class="px-4 py-4 border-t border-gray-200 dark:border-gray-700">
+            <div class="flex items-center gap-3 mb-3">
+                <a href="https://facebook.com/mobilekhujo" target="_blank" rel="noopener" aria-label="Facebook"
+                   class="w-9 h-9 rounded-full bg-gray-100 dark:bg-[#2a2a2a] flex items-center justify-center text-[#1877f2]">
+                    <i class="fab fa-facebook-f text-sm"></i>
+                </a>
+                <a href="https://youtube.com/@mobilekhujo" target="_blank" rel="noopener" aria-label="YouTube"
+                   class="w-9 h-9 rounded-full bg-gray-100 dark:bg-[#2a2a2a] flex items-center justify-center text-[#ff0000]">
+                    <i class="fab fa-youtube text-sm"></i>
+                </a>
+            </div>
+            <div class="flex flex-wrap items-center gap-y-1">
+                <a href="/about" class="footer-dot-link text-xs">About</a><span class="footer-dot text-xs">·</span>
+                <a href="/contact" class="footer-dot-link text-xs">Contact</a><span class="footer-dot text-xs">·</span>
+                <a href="/policy" class="footer-dot-link text-xs">Terms</a>
+            </div>
+        </div>
+    </aside>
+
     <script>
     (function() {
         // ডার্ক মোড টগল বাটন এখন sidebar-এ যাবে (পরে যুক্ত হবে) —
@@ -191,6 +252,44 @@
                 if (e.key === 'Escape') closeSearch();
             });
         }
+    })();
+
+    // Sidebar খোলা/বন্ধ করা (screenshot অনুযায়ী slide-in menu)
+    (function() {
+        var menuToggle = document.getElementById('menu-toggle');
+        var sidebar    = document.getElementById('sidebar');
+        var overlay    = document.getElementById('sidebar-overlay');
+        var closeBtn   = document.getElementById('sidebar-close');
+
+        function openSidebar() {
+            overlay.classList.remove('hidden');
+            requestAnimationFrame(function() {
+                sidebar.classList.remove('-translate-x-full');
+            });
+            document.body.style.overflow = 'hidden';
+        }
+        function closeSidebar() {
+            sidebar.classList.add('-translate-x-full');
+            document.body.style.overflow = '';
+            setTimeout(function() { overlay.classList.add('hidden'); }, 300);
+        }
+
+        if (menuToggle) menuToggle.addEventListener('click', openSidebar);
+        if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+        if (overlay) overlay.addEventListener('click', closeSidebar);
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeSidebar();
+        });
+
+        // Archive / Brands accordion
+        document.querySelectorAll('.sidebar-accordion-toggle').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var panel = btn.nextElementSibling;
+                var icon  = btn.querySelector('i');
+                panel.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
     })();
     </script>
 
