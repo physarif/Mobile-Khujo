@@ -49,54 +49,6 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
-        /* Hero tab bar — solid pill buttons */
-        .segment-track {
-            display: flex;
-            width: 100%;
-            gap: 8px;
-        }
-        .segment-item {
-            flex: 1;
-            text-align: center;
-            padding: 0.35rem 0.5rem;
-            border-radius: 0;
-            font-size: 0.9rem;
-            font-weight: 400;
-            color: #6b7280;
-            text-decoration: none;
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            transition: background 0.15s, color 0.15s, border-color 0.15s;
-        }
-        .dark .segment-item {
-            color: #9ca3af;
-            background: #2d2d2d;
-            border-color: #4b5563;
-        }
-        .segment-item:active {
-            background: #1a7ad9;
-            color: #ffffff;
-            border-color: #1a7ad9;
-        }
-        .dark .segment-item:active {
-            background: #1a7ad9;
-            color: #ffffff;
-            border-color: #1a7ad9;
-        }
-        .segment-item.active {
-            color: #ffffff;
-            font-weight: 700;
-            background: #1e90ff;
-            border-color: #1e90ff;
-        }
-        .segment-item.active:hover { color: #ffffff; }
-        .dark .segment-item.active {
-            color: #ffffff;
-            background: #1e90ff;
-            border-color: #1e90ff;
-        }
-        .dark .segment-item.active:hover { color: #ffffff; }
-
         /* Category links — footer style, larger */
         .category-underline-list li { display: inline-flex; align-items: center; white-space: nowrap; }
         .category-underline-list li + li::before {
@@ -164,47 +116,44 @@
 </head>
 <body class="bg-gray-50 text-gray-800 dark:bg-[#1a1a1b] dark:text-gray-200 flex flex-col min-h-screen">
 
-    <!-- HERO SECTION (Wikipedia-style) -->
-    <div class="flex flex-col items-center justify-center pt-12 pb-2 px-4 text-center">
-
-        <{{hero_tag}} class="text-4xl md:text-6xl font-extrabold tracking-tighter mb-2 leading-tight">
-            <a href="/" class="hover:text-brand-500 active:text-brand-500 transition-colors">Mobile <span class="font-light text-gray-400 dark:text-gray-500">Khujo</span></a>
-        </{{hero_tag}}>
-
-        <!-- Search box -->
-        <div class="w-full max-w-xl relative flex items-center bg-white dark:bg-[#2d2d2d] border border-gray-200 dark:border-gray-600 rounded-full focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-transparent transition-all">
-            <input id="main-search-input" type="text" placeholder="ফোন, ব্র্যান্ড বা বাজেট খুঁজুন..."
-                class="flex-1 bg-transparent py-3 pl-5 pr-2 text-sm focus:outline-none text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 min-w-0">
-            <button id="main-search-btn" class="bg-brand-500 hover:bg-brand-600 active:bg-brand-600 text-white px-5 py-2 rounded-full text-sm font-medium transition-colors shrink-0 mr-1">
-                খুঁজুন
+    <!-- HEADER -->
+    <header class="bg-white dark:bg-[#1a1a1b] border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
+        <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+            <button id="menu-toggle" aria-label="মেনু" class="text-gray-700 dark:text-gray-200 text-xl w-9 h-9 flex items-center justify-center">
+                <i class="fas fa-bars"></i>
             </button>
-        </div>
 
-        <!-- Tab Bar (segmented control) -->
-        <div class="segment-track mt-4 w-full max-w-xl">
-            <a href="/" data-tab-path="/" class="hero-tab-btn segment-item">ফোন</a>
-            <a href="/brands/" data-tab-path="/brands/" class="hero-tab-btn segment-item">ব্র্যান্ড</a>
-            <a href="/budget/" data-tab-path="/budget/" class="hero-tab-btn segment-item">বাজেট</a>
-            <a href="/reviews/" data-tab-path="/reviews/" class="hero-tab-btn segment-item">রিভিউ</a>
+            <{{hero_tag}} class="m-0 leading-none">
+                <a href="/" class="flex items-center">
+                    <img src="https://mobilekhujo.pages.dev/assets/mobilekhujo.png" alt="Mobile Khujo" class="h-9 w-auto">
+                </a>
+            </{{hero_tag}}>
+
+            <div class="flex items-center gap-4">
+                <button id="theme-toggle" aria-label="ডার্ক মোড" class="text-gray-700 dark:text-gray-200 text-lg w-9 h-9 flex items-center justify-center">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="/search.html" aria-label="সার্চ" class="text-gray-700 dark:text-gray-200 text-lg w-9 h-9 flex items-center justify-center">
+                    <i class="fas fa-search"></i>
+                </a>
+            </div>
         </div>
-        <script>
-        (function() {
-            var path = window.location.pathname;
-            var rules = {
-                '/': /^\/((phone|phones)(\/.*)?)?$/,
-                '/brands/': /^\/(brand|brands)(\/.*)?$/,
-                '/budget/': /^\/(budget)(\/.*)?$/,
-                '/reviews/': /^\/(review|reviews)(\/.*)?$/
-            };
-            document.querySelectorAll('.hero-tab-btn').forEach(function(btn) {
-                var tabPath = btn.getAttribute('data-tab-path');
-                var re = rules[tabPath];
-                if (re && re.test(path)) btn.classList.add('active');
+    </header>
+
+    <script>
+    (function() {
+        var root = document.documentElement;
+        var toggle = document.getElementById('theme-toggle');
+        var stored = localStorage.getItem('mk-theme');
+        if (stored === 'dark') root.classList.add('dark');
+        if (toggle) {
+            toggle.addEventListener('click', function() {
+                root.classList.toggle('dark');
+                localStorage.setItem('mk-theme', root.classList.contains('dark') ? 'dark' : 'light');
             });
-        })();
-        </script>
-
-    </div>
+        }
+    })();
+    </script>
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 min-w-0">
@@ -276,18 +225,6 @@
                 })
                 .catch(() => { el.style.display = 'none'; });
         })();
-    </script>
-
-    <script>
-        // Search
-        function doSearch(query) {
-            if (query.trim()) {
-                window.location.href = '/search.html?q=' + encodeURIComponent(query.trim());
-            }
-        }
-        const mainInput = document.getElementById('main-search-input');
-        document.getElementById('main-search-btn').addEventListener('click', () => doSearch(mainInput.value));
-        mainInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(mainInput.value); });
     </script>
 
 
