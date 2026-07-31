@@ -1,1 +1,454 @@
-v
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Analytics — নিজের GA4 measurement ID দিয়ে বদলে দিন -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    <link rel="icon" type="image/webp" href="/assets/photos/mobilekhujo-logo.webp">
+    <link rel="apple-touch-icon" href="/assets/photos/mobilekhujo-logo.webp">
+    <title>{{full_title}}</title>
+    <meta name="description" content="{{page_description}}">
+    <meta name="robots" content="{{robots_meta}}">
+    <link rel="canonical" href="{{page_url}}">
+    <meta property="og:title" content="{{full_title}}">
+    <meta property="og:description" content="{{page_description}}">
+    <meta property="og:image" content="{{page_image}}">
+    <meta property="og:url" content="{{page_url}}">
+    <meta property="og:type" content="{{page_type}}">
+    <meta property="og:site_name" content="Mobile Khujo">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{full_title}}">
+    <meta name="twitter:description" content="{{page_description}}">
+    <meta name="twitter:image" content="{{page_image}}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50:  '#f0f8ff',
+                            100: '#dbeeff',
+                            500: '#1e90ff',
+                            600: '#1a7ad9'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        /* Hero tab bar — solid pill buttons */
+        .segment-track {
+            display: flex;
+            width: 100%;
+            gap: 8px;
+        }
+        .segment-item {
+            flex: 1;
+            text-align: center;
+            padding: 0.35rem 0.5rem;
+            border-radius: 0;
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #6b7280;
+            text-decoration: none;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+        .dark .segment-item {
+            color: #9ca3af;
+            background: #2d2d2d;
+            border-color: #4b5563;
+        }
+        .segment-item:active {
+            background: #1a7ad9;
+            color: #ffffff;
+            border-color: #1a7ad9;
+        }
+        .dark .segment-item:active {
+            background: #1a7ad9;
+            color: #ffffff;
+            border-color: #1a7ad9;
+        }
+        .segment-item.active {
+            color: #ffffff;
+            font-weight: 700;
+            background: #1e90ff;
+            border-color: #1e90ff;
+        }
+        .segment-item.active:hover { color: #ffffff; }
+        .dark .segment-item.active {
+            color: #ffffff;
+            background: #1e90ff;
+            border-color: #1e90ff;
+        }
+        .dark .segment-item.active:hover { color: #ffffff; }
+
+        /* Category links — footer style, larger */
+        .category-underline-list li { display: inline-flex; align-items: center; white-space: nowrap; }
+        .category-underline-list li + li::before {
+            content: '·';
+            color: #9ca3af;
+            font-size: 16px;
+            margin: 0 5px;
+            line-height: 1;
+        }
+        .dark .category-underline-list li + li::before { color: #4b5563; }
+        .category-underline-list li.line-start::before { display: none !important; }
+        .category-underline-list a {
+            font-size: 17px;
+            font-weight: 400;
+            color: #1e90ff;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .category-underline-list a:hover { color: #1a7ad9; text-decoration: underline; }
+        .category-underline-list a:active,
+        .category-underline-list a:focus { text-decoration: underline; outline: none; }
+        .dark .category-underline-list a { color: #63b3ff; }
+        .dark .category-underline-list a:hover,
+        .dark .category-underline-list a:active { color: #8ec8ff; text-decoration: underline; }
+
+        /* Footer dot-separated links */
+        .footer-dot-link {
+            font-size: 14px;
+            color: #1e90ff;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .footer-dot-link:hover { color: #1a7ad9; text-decoration: underline; }
+        .footer-dot-link:active,
+        .footer-dot-link:focus { text-decoration: underline; outline: none; }
+        .dark .footer-dot-link { color: #63b3ff; }
+        .dark .footer-dot-link:hover,
+        .dark .footer-dot-link:active { color: #8ec8ff; text-decoration: underline; }
+        .footer-dot {
+            color: #999;
+            font-size: 16px;
+            margin: 0 6px;
+            line-height: 1;
+        }
+        @media (min-width: 768px) {
+            #ad-bar > div:first-child { padding: 0 2rem; }
+        }
+
+        /* Visit counter — retro LCD display */
+        .mk-visit-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #0e1a2b;
+            border-radius: 0;
+            padding: 0.15rem 0.7rem;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
+            font-family: 'Courier New', Consolas, monospace;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            color: #3ba8ff;
+            text-shadow: 0 0 8px rgba(59,168,255,0.75);
+            white-space: nowrap;
+        }
+        .mk-visit-pill i { font-size: 0.7rem; color: #3ba8ff; opacity: 0.85; }
+        .mk-visit-pill .mk-sep { color: #3ba8ff; margin: 0 0.05rem; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-[#1a1a1b] dark:text-gray-200 flex flex-col min-h-screen">
+
+    <!-- ── Ad Bar (hero-এর উপরে) ── -->
+    <div id="ad-bar" style="
+        display: none;
+        flex-direction: column-reverse;
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+        width: 100%;
+    ">
+        <!-- Toggle Button -->
+        <div style="display:flex; align-items:stretch; max-width:1280px; margin:0 auto; width:100%;">
+            <button id="ad-bar-toggle" onclick="toggleAdBar()" style="
+                background: #1e90ff;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                padding: 5px 12px;
+                font-size: 13px;
+                color: #fff;
+                flex-shrink: 0;
+                transition: background 0.2s;
+            " title="বিজ্ঞাপন লুকান / দেখান">
+                <svg id="ad-bar-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+                <span id="ad-bar-label">অ্যাড দেখুন</span>
+            </button>
+            <span id="ad-bar-datetime" style="display:none; font-size:13px; margin-left:auto; padding:0 12px; white-space:nowrap; align-self:center;"></span>
+
+            <div id="ad-bar-notice" style="overflow:hidden; display:none; align-items:center; align-self:stretch; flex:1; padding:0 12px; position:relative; min-height:1.4em;">
+                <span id="ad-msg-1" style="
+                    font-size:13px; letter-spacing:0.02em; white-space:nowrap;
+                    position:absolute; left:12px;
+                    opacity:0; transition:opacity 0.6s, transform 0.6s;
+                    transform:translateY(6px);
+                ">
+                    <strong style="color:#111;">Mobile</strong> <strong style="color:#6b7280;">Khujo</strong> কে বিজ্ঞাপনমুক্ত রাখতে সাহায্য করুন।
+                </span>
+                <span id="ad-msg-2" style="
+                    font-size:13px; letter-spacing:0.02em; white-space:nowrap;
+                    position:absolute; left:12px;
+                    opacity:0; transition:opacity 0.6s, transform 0.6s;
+                    transform:translateY(6px);
+                ">
+                    নতুন ফোন রিভিউ পেতে <strong style="color:#1e90ff;">Telegram</strong>-এ জয়েন করুন।
+                </span>
+            </div>
+            <style>
+                .dark #ad-msg-1 strong:first-child { color: #e5e7eb !important; }
+                .dark #ad-msg-1 strong:nth-child(2) { color: #9ca3af !important; }
+            </style>
+        </div>
+
+        <!-- Ad Content -->
+        <div id="ad-bar-content" style="
+            overflow: auto;
+            background: #f9fafb;
+            transition: max-height 0.9s cubic-bezier(0.4, 0, 0.2, 1), padding 0.7s;
+            max-height: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0;
+        ">
+        </div>
+    </div>
+    <!-- END Ad Bar -->
+
+    <!-- HERO SECTION (Wikipedia-style) -->
+    <div class="flex flex-col items-center justify-center pt-12 pb-2 px-4 text-center">
+
+        <{{hero_tag}} class="text-4xl md:text-6xl font-extrabold tracking-tighter mb-2 leading-tight">
+            <a href="/" class="hover:text-brand-500 active:text-brand-500 transition-colors">Mobile <span class="font-light text-gray-400 dark:text-gray-500">Khujo</span></a>
+        </{{hero_tag}}>
+
+        <!-- Search box -->
+        <div class="w-full max-w-xl relative flex items-center bg-white dark:bg-[#2d2d2d] border border-gray-200 dark:border-gray-600 rounded-full focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-transparent transition-all">
+            <input id="main-search-input" type="text" placeholder="ফোন, ব্র্যান্ড বা বাজেট খুঁজুন..."
+                class="flex-1 bg-transparent py-3 pl-5 pr-2 text-sm focus:outline-none text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 min-w-0">
+            <button id="main-search-btn" class="bg-brand-500 hover:bg-brand-600 active:bg-brand-600 text-white px-5 py-2 rounded-full text-sm font-medium transition-colors shrink-0 mr-1">
+                খুঁজুন
+            </button>
+        </div>
+
+        <!-- Tab Bar (segmented control) -->
+        <div class="segment-track mt-4 w-full max-w-xl">
+            <a href="/" data-tab-path="/" class="hero-tab-btn segment-item">ফোন</a>
+            <a href="/brands/" data-tab-path="/brands/" class="hero-tab-btn segment-item">ব্র্যান্ড</a>
+            <a href="/budget/" data-tab-path="/budget/" class="hero-tab-btn segment-item">বাজেট</a>
+            <a href="/reviews/" data-tab-path="/reviews/" class="hero-tab-btn segment-item">রিভিউ</a>
+        </div>
+        <script>
+        (function() {
+            var path = window.location.pathname;
+            var rules = {
+                '/': /^\/((phone|phones)(\/.*)?)?$/,
+                '/brands/': /^\/(brand|brands)(\/.*)?$/,
+                '/budget/': /^\/(budget)(\/.*)?$/,
+                '/reviews/': /^\/(review|reviews)(\/.*)?$/
+            };
+            document.querySelectorAll('.hero-tab-btn').forEach(function(btn) {
+                var tabPath = btn.getAttribute('data-tab-path');
+                var re = rules[tabPath];
+                if (re && re.test(path)) btn.classList.add('active');
+            });
+        })();
+        </script>
+
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 min-w-0">
+        {{content}}
+    </main>
+
+    <script>
+    (function() {
+        var bar = document.getElementById('ad-bar');
+        var content = document.getElementById('ad-bar-content');
+        var icon = document.getElementById('ad-bar-icon');
+        var collapsed = true;
+        var dtInterval = null;
+
+        // Start collapsed — state already set in HTML/CSS
+        // Show datetime immediately since bar starts collapsed
+        if (document.getElementById('ad-bar-datetime')) {
+            document.getElementById('ad-bar-datetime').style.display = 'inline';
+            setTimeout(function() { updateDatetime(); dtInterval = setInterval(updateDatetime, 1000); }, 0);
+        }
+
+        var adOpenTime = null;
+        var autoCloseTimer = null;
+        var autoOpened = false;
+        // TODO: নিজের ad network-এর redirect URL দিয়ে বদলে দিন
+        var AD_REDIRECT_URL = 'https://example.com/replace-with-your-ad-network-link';
+
+        // Auto-open after 1.5s
+        setTimeout(function() {
+            if (collapsed) {
+                autoOpened = true;
+                toggleAdBar();
+            }
+        }, 0);
+
+
+
+        var label = document.getElementById('ad-bar-label');
+        var notice = document.getElementById('ad-bar-notice');
+        var datetime = document.getElementById('ad-bar-datetime');
+
+        // ── Bengali helpers ──
+        function toBnDigits(n) {
+            return String(n).replace(/[0-9]/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+        }
+        var bnDays   = ['রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার','শনিবার'];
+        var bnBoshontoMonths = ['বৈশাখ','জ্যৈষ্ঠ','আষাঢ়','শ্রাবণ','ভাদ্র','আশ্বিন','কার্তিক','অগ্রহায়ণ','পৌষ','মাঘ','ফাল্গুন','চৈত্র'];
+
+        // Bangabda conversion (Bangladesh calendar)
+        function toBangabda(now) {
+            var gYear  = now.getFullYear();
+            var gMonth = now.getMonth() + 1;
+            var gDay   = now.getDate();
+            var bnMonth, bnDay, bnYear;
+            var monthMap = [
+                [1,  14, 9,  14],[2,  13, 10, 13],[3,  14, 11, 14],[4,  14, 0,  14],
+                [5,  15, 1,  15],[6,  15, 2,  15],[7,  16, 3,  16],[8,  16, 4,  16],
+                [9,  16, 5,  16],[10, 16, 6,  16],[11, 15, 7,  15],[12, 15, 8,  15],
+            ];
+            var idx = gMonth - 1;
+            var startDay = monthMap[idx][3];
+            if (gDay >= startDay) {
+                bnMonth = monthMap[idx][2];
+                bnDay   = gDay - startDay + 1;
+            } else {
+                bnMonth = (monthMap[idx][2] - 1 + 12) % 12;
+                var prevGMonth = gMonth === 1 ? 12 : gMonth - 1;
+                var prevStart  = monthMap[prevGMonth - 1][3];
+                var daysInPrevGMonth = new Date(gYear, gMonth - 1, 0).getDate();
+                bnDay = daysInPrevGMonth - prevStart + gDay + 1;
+            }
+            bnYear = (bnMonth <= 4) ? gYear - 593 : gYear - 594;
+            return { day: bnDay, month: bnMonth, year: bnYear };
+        }
+
+        function updateDatetime() {
+            if (!datetime) return;
+            var now  = new Date();
+            var day  = bnDays[now.getDay()];
+            var h    = now.getHours();
+            var m    = now.getMinutes();
+            var s    = now.getSeconds();
+            var h12  = h % 12 || 12;
+            var bn   = toBangabda(now);
+            datetime.innerHTML =
+                '<span style="color:#9ca3af;font-weight:400;">' + day + ', </span>' +
+                '<strong style="color:inherit;font-weight:700;">' + toBnDigits(bn.day) + '</strong>' +
+                '<span style="color:#9ca3af;font-weight:400;"> ' + bnBoshontoMonths[bn.month] + ' </span>' +
+                '<strong style="color:inherit;font-weight:700;">' + toBnDigits(bn.year) + '</strong>' +
+                '<span style="color:#9ca3af;font-weight:400;">  |  </span>' +
+                '<strong style="color:inherit;font-weight:700;">' +
+                    toBnDigits(h12) + ':' + toBnDigits(String(m).padStart(2,'0')) + ':' + toBnDigits(String(s).padStart(2,'0')) +
+                '</strong>';
+        }
+
+        var twTimer = null;
+        var twPhase = 0;
+
+        function showAdMsg(phase) {
+            var m1 = document.getElementById('ad-msg-1');
+            var m2 = document.getElementById('ad-msg-2');
+            if (!m1 || !m2) return;
+            var current = phase % 2 === 0 ? m1 : m2;
+            var other   = phase % 2 === 0 ? m2 : m1;
+            // hide other
+            other.style.opacity = '0';
+            other.style.transform = 'translateY(6px)';
+            // show current
+            setTimeout(function() {
+                current.style.opacity = '1';
+                current.style.transform = 'translateY(0)';
+            }, 50);
+            // cycle after 3s
+            twTimer = setTimeout(function() {
+                current.style.opacity = '0';
+                current.style.transform = 'translateY(-6px)';
+                twPhase++;
+                twTimer = setTimeout(function() { showAdMsg(twPhase); }, 700);
+            }, twPhase % 2 === 0 ? 3000 : 7000);
+        }
+
+        window.toggleAdBar = function() {
+            collapsed = !collapsed;
+            if (collapsed) {
+                // শুধু auto-open এর সময় ৩০s এর আগে close করলে redirect
+                var elapsed = adOpenTime ? (Date.now() - adOpenTime) : 30000;
+                if (autoOpened && elapsed < 30000) {
+                    window.open(AD_REDIRECT_URL, '_blank');
+                }
+                autoOpened = false;
+                adOpenTime = null;
+                clearTimeout(autoCloseTimer);
+                content.style.maxHeight = '0';
+                content.style.padding = '0';
+                if (notice) notice.style.display = 'none';
+                clearTimeout(twTimer);
+                var m1 = document.getElementById('ad-msg-1');
+                var m2 = document.getElementById('ad-msg-2');
+                if (m1) { m1.style.opacity='0'; m1.style.transform='translateY(6px)'; }
+                if (m2) { m2.style.opacity='0'; m2.style.transform='translateY(6px)'; }
+                if (datetime) { datetime.style.display = 'inline'; updateDatetime(); dtInterval = setInterval(updateDatetime, 1000); }
+                icon.innerHTML = '<polyline points="18 15 12 9 6 15"></polyline>';
+                label.textContent = 'অ্যাড দেখুন';
+            } else {
+                if (!autoOpened) adOpenTime = null; // manual open — redirect নেই
+                adOpenTime = Date.now();
+                content.style.maxHeight = '500px';
+                content.style.padding = '6px 10px';
+                if (notice) notice.style.display = 'flex';
+                if (datetime) { datetime.style.display = 'none'; clearInterval(dtInterval); }
+                icon.innerHTML = '<polyline points="6 9 12 15 18 9"></polyline>';
+                label.textContent = 'অ্যাড লুকান';
+                twPhase = 0;
+                twTimer = setTimeout(function() { showAdMsg(twPhase); }, 500);
+            }
+        };
+    })();
+    </script>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-100 dark:bg-[#1f1f1f] border-t border-gray-300 dark:border-gray-700 mt-8">
+
+        <!-- Brand row: always visible on mobile, hidden on desktop (icons move to bottom row) -->
+        <div class="max-w-3xl mx-auto px-5 pt-6 pb-4 flex items-center justify-between">
+            <div>
+                <a href="/"
+                   class="text-3xl font-extrabold tracking-tight text-gray-800 dark:text-gray-100 active:text-brand-500 transition-colors group">
+                    <span class="group-active:text-brand-500 transition-colors">Mobile</span> <span class="font-light text-gray-400 dark:text-gray-500">Khujo</span>
+                </a>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">বাংলাদেশের মোবাইল রিভিউ ও তুলনা প্ল্যাটফর্ম।</p>
+            </div>
+            <!-- Social icons -->
+            <di
