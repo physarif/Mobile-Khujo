@@ -1,0 +1,298 @@
+<!-- components/index.html — হোমপেজ কন্টেন্ট + সব styling এখানে -->
+<style>
+  /* Section */
+  .mk-section { padding: 0.75rem 0; margin-bottom: 0.5rem; }
+  @media (min-width: 768px) { .mk-section { margin-left: 0.5rem; margin-right: 0.5rem; padding: 0.75rem 0.4rem; } }
+
+  /* Quick-filter chip row (ব্র্যান্ড / বাজেট) */
+  .mk-chip-row {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.25rem 1rem 0.75rem;
+    scrollbar-width: none;
+  }
+  .mk-chip-row::-webkit-scrollbar { display: none; }
+  @media (min-width: 768px) { .mk-chip-row { padding: 0.25rem 1.5rem 0.75rem; flex-wrap: wrap; overflow-x: visible; } }
+  .mk-chip {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1e90ff;
+    background: #f0f8ff;
+    border: 1px solid #dbeeff;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+  }
+  .mk-chip:hover, .mk-chip:active { background: #1e90ff; color: #fff; border-color: #1e90ff; }
+  .dark .mk-chip { color: #8ec8ff; background: #1a2634; border-color: #2d3f52; }
+  .dark .mk-chip:hover, .dark .mk-chip:active { background: #1e90ff; color: #fff; border-color: #1e90ff; }
+
+  /* Section header */
+  .mk-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    padding: 0 1rem;
+  }
+  @media (min-width: 768px) { .mk-section-header { padding: 0 1.5rem; } }
+
+  /* Title + extending line */
+  .mk-section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+  }
+  .mk-section-title::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: #1e90ff;
+    border-radius: 1px;
+  }
+  .dark .mk-section-title { color: #f3f4f6; }
+  .dark .mk-section-title::after { background: #63b3ff; }
+
+  /* List container */
+  .mk-list {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    gap: 0.4rem;
+  }
+  @media (min-width: 768px) {
+    .mk-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem;
+      padding: 0;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .mk-card:nth-child(odd) { padding-right: 0.75rem; }
+    .mk-card:nth-child(even) { padding-left: 0.75rem; }
+  }
+
+  /* Phone card — horizontal list style */
+  .mk-card {
+    display: flex;
+    flex-direction: row;
+    gap: 0.85rem;
+    align-items: flex-start;
+    text-decoration: none;
+    padding: 0.75rem;
+    transition: background 0.1s;
+    background: #fff;
+  }
+  .dark .mk-card { background: #23232a; }
+  .mk-card:first-child { padding-top: 0.75rem; }
+  .mk-card:last-child { padding-bottom: 0.75rem; }
+  .mk-card:hover { background: #eef7ff; }
+  .dark .mk-card:hover { background: #1e2a38; }
+
+  /* Cover — left side, fixed size */
+  .mk-img-wrap {
+    flex-shrink: 0;
+    width: 5.5rem;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    background: #e5e7eb;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  @media (min-width: 768px) { .mk-img-wrap { width: 6.5rem; } }
+  .dark .mk-img-wrap { background: #374151; }
+
+  .mk-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Right side text */
+  .mk-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  /* Headline: ফোনের নাম */
+  .mk-headline {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .mk-title {
+    font-weight: 700;
+    color: #1e90ff;
+  }
+  .dark .mk-title { color: #63b3ff; }
+  .mk-card:hover .mk-title { text-decoration: none; }
+  .dark .mk-card:hover .mk-title { text-decoration: none; }
+
+  /* Price + brand + rating */
+  .mk-meta {
+    font-size: 0.82rem;
+    color: #9ca3af;
+    margin: 0;
+  }
+  .mk-meta .mk-price {
+    color: #16a34a;
+    font-weight: 700;
+  }
+  .dark .mk-meta { color: #6b7280; }
+  .dark .mk-meta .mk-price { color: #4ade80; }
+
+  /* Short review teaser */
+  .mk-desc {
+    margin-top: 0.3rem;
+    font-size: 1.02rem;
+    color: #4b5563;
+    line-height: 1.6;
+    text-align: justify;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .dark .mk-desc { color: #9ca3af; }
+
+  /* Pagination */
+  .mk-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.6rem 1rem 0.2rem;
+    flex-wrap: wrap;
+  }
+  .mk-page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.1rem;
+    height: 2.1rem;
+    padding: 0 0.5rem;
+    border-radius: 0.3rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: #374151;
+    background: #f3f4f6;
+    transition: background 0.15s, color 0.15s;
+  }
+  .mk-page-btn:hover { background: #e5e7eb; color: #111827; }
+  .mk-page-btn.active { background: #1e90ff; color: #fff; pointer-events: none; }
+  .mk-page-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0 0.75rem;
+    height: 2.1rem;
+    border-radius: 0.3rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: #fff;
+    background: #1e90ff;
+    transition: background 0.15s;
+  }
+  .mk-page-nav:hover { background: #1a7ad9; }
+  .dark .mk-page-btn { background: #1f2937; color: #d1d5db; }
+  .dark .mk-page-btn:hover { background: #374151; color: #f9fafb; }
+  .dark .mk-page-btn.active { background: #63b3ff; color: #111827; }
+  .dark .mk-page-nav { background: #63b3ff; color: #111827; }
+  .dark .mk-page-nav:hover { background: #3ba8ff; }
+</style>
+
+<!--
+  Phone card template (reference — generate_pages.js এ ব্যবহার হয়):
+  <a href="/phone/{{phone_slug}}.html" class="mk-card">
+    <div class="mk-img-wrap">
+      <img src="{{phone_image}}" alt="{{phone_name}}" class="mk-img" loading="lazy">
+    </div>
+    <div class="mk-body">
+      <p class="mk-headline"><span class="mk-title">{{phone_name}}</span></p>
+      <p class="mk-meta">{{phone_brand}} · <span class="mk-price">{{phone_price}}</span></p>
+      <p class="mk-desc">{{phone_summary}}</p>
+    </div>
+  </a>
+-->
+
+<main class="flex-1 py-4 md:py-6 md:px-8 lg:px-16 min-h-[calc(100vh-3.5rem)] min-w-0 overflow-hidden">
+
+  <!-- ব্র্যান্ড অনুযায়ী quick filter -->
+  <div class="mk-chip-row">
+    {{brand_chips}}
+    <!--
+      Chip template:
+      <a href="/brands/{{brand_slug}}.html" class="mk-chip">{{brand_name}}</a>
+    -->
+  </div>
+
+  <!-- বাজেট অনুযায়ী quick filter -->
+  <div class="mk-chip-row" style="padding-top:0; margin-top:-0.5rem;">
+    {{budget_chips}}
+    <!--
+      Chip template:
+      <a href="/budget/{{budget_slug}}.html" class="mk-chip">{{budget_label}}</a>
+      e.g. ১০ হাজারের নিচে, ১০-২০ হাজার, ২০-৩০ হাজার, ফ্ল্যাগশিপ
+    -->
+  </div>
+
+  <!-- সর্বশেষ ফোন -->
+  <section class="mk-section">
+    <div style="padding:0.45rem 1rem;background:#1e90ff;font-size:1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+      <span style="color:#fff;font-weight:700;letter-spacing:0.01em;">সর্বশেষ ফোন</span>
+      <span style="background:rgba(255,255,255,0.18);color:#fff;font-weight:600;font-size:0.78rem;padding:0.15rem 0.6rem;">{{total_phones_bn}} টি ফোন</span>
+    </div>
+    <div class="mk-list">{{latest_phones}}</div>
+  </section>
+
+  <div id="mk-pagination"></div>
+  <script>
+    (function() {
+      const current = parseInt('{{current_page}}', 10);
+      const total = parseInt('{{total_pages}}', 10);
+      if (!current || !total || total <= 1) return;
+      const bnDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+      const toBn = n => String(n).split('').map(d => bnDigits[d] !== undefined ? bnDigits[d] : d).join('');
+      const el = document.getElementById('mk-pagination');
+      let html = '<div class="mk-pagination">';
+      if (current > 1) {
+        const prev = current === 2 ? '/' : '/phones/' + (current - 1) + '/';
+        html += '<a href="' + prev + '" class="mk-page-nav"><i class="fas fa-chevron-left text-xs"></i> পূর্ববর্তী</a>';
+      }
+      for (let i = 1; i <= total; i++) {
+        const href = i === 1 ? '/' : '/phones/' + i + '/';
+        if (i === current) html += '<span class="mk-page-btn active">' + toBn(i) + '</span>';
+        else html += '<a href="' + href + '" class="mk-page-btn">' + toBn(i) + '</a>';
+      }
+      if (current < total) {
+        html += '<a href="/phones/' + (current + 1) + '/" class="mk-page-nav">পরবর্তী <i class="fas fa-chevron-right text-xs"></i></a>';
+      }
+      html += '</div>';
+      el.innerHTML = html;
+    })();
+  </script>
+
+</main>
