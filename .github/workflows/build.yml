@@ -32,7 +32,7 @@ jobs:
 
       # ৩. Dependencies install
       - name: Install dependencies
-        run: npm install firebase-admin wrangler
+        run: npm install firebase-admin wrangler @firebase/app
 
       # ৪. Firebase থেকে data fetch + homepage generate
       - name: Generate static pages
