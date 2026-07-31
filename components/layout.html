@@ -120,7 +120,7 @@
 <body class="bg-gray-50 text-gray-800 dark:bg-[#1a1a1b] dark:text-gray-200 flex flex-col min-h-screen">
 
     <!-- HEADER -->
-    <header class="bg-white/90 dark:bg-[#1a1a1b]/90 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
+    <header id="site-header" class="bg-white/90 dark:bg-[#1a1a1b]/90 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
 
         <!-- Normal header row -->
         <div id="header-default-row" class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -225,6 +225,7 @@
 
     // সার্চ আইকনে ট্যাপ করলে header-এ search box খুলবে (screenshot অনুযায়ী)
     (function() {
+        var header     = document.getElementById('site-header');
         var defaultRow = document.getElementById('header-default-row');
         var searchRow  = document.getElementById('header-search-row');
         var openBtn    = document.getElementById('search-open');
@@ -234,11 +235,15 @@
         function openSearch() {
             defaultRow.classList.add('hidden');
             searchRow.classList.remove('hidden');
+            header.classList.remove('bg-white/90', 'dark:bg-[#1a1a1b]/90');
+            header.classList.add('bg-white', 'dark:bg-[#1a1a1b]');
             input.focus();
         }
         function closeSearch() {
             searchRow.classList.add('hidden');
             defaultRow.classList.remove('hidden');
+            header.classList.remove('bg-white', 'dark:bg-[#1a1a1b]');
+            header.classList.add('bg-white/90', 'dark:bg-[#1a1a1b]/90');
             input.value = '';
         }
 
@@ -266,11 +271,9 @@
             requestAnimationFrame(function() {
                 sidebar.classList.remove('-translate-x-full');
             });
-            document.body.style.overflow = 'hidden';
         }
         function closeSidebar() {
             sidebar.classList.add('-translate-x-full');
-            document.body.style.overflow = '';
             setTimeout(function() { overlay.classList.add('hidden'); }, 300);
         }
 
