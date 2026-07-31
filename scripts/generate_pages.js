@@ -106,11 +106,10 @@ async function generateHomepage() {
   console.log('📱 Firebase থেকে phone data fetch করছি...');
 
   const phonesSnap = await db.ref('/phones').orderByKey().once('value');
-  const phonesRaw = phonesSnap.val();
+  const phonesRaw = phonesSnap.val() || {};
 
-  if (!phonesRaw) {
-    console.log('কোনো phone data পাওয়া যায়নি।');
-    return;
+  if (Object.keys(phonesRaw).length === 0) {
+    console.log('⚠️  কোনো phone data পাওয়া যায়নি — খালি হোমপেজ generate করছি।');
   }
 
   const phoneList = Object.entries(phonesRaw).map(([firebaseKey, phone]) => ({
