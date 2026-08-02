@@ -512,57 +512,39 @@
 
         <div class="field-row">
           <div class="field">
-            <label>UID <span style="font-weight:300;text-transform:none;letter-spacing:0;">(6 digit, used as key)</span></label>
-            <input type="text" id="ph-fUid" placeholder="e.g. a1b2c3" readonly style="font-family:monospace;font-size:0.82rem;background:var(--bg);color:var(--muted);"/>
-          </div>
-          <div class="field">
-            <label>ID <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional, numeric)</span></label>
-            <input type="number" id="ph-fId" placeholder="e.g. 101" min="1" step="1"/>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Name</label>
-          <input type="text" id="ph-fName" placeholder="e.g. Honor X6e" oninput="PH_onNameInput(this.value)"/>
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label>Slug</label>
+            <label>Slug <span style="font-weight:300;text-transform:none;letter-spacing:0;">(used as key)</span></label>
             <input type="text" id="ph-fSlug" placeholder="e.g. honor-x6e"/>
-          </div>
-          <div class="field">
-            <label>Brand</label>
-            <select id="ph-fBrand"><option value="">Loading...</option></select>
-          </div>
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label>Price (৳)</label>
-            <input type="number" id="ph-fPrice" placeholder="e.g. 22000" min="0" step="1"/>
           </div>
           <div class="field">
             <label>Status</label>
             <select id="ph-fStatus">
-              <option value="official">Official</option>
-              <option value="unofficial">Unofficial</option>
+              <option value="available">Available</option>
+              <option value="unavailable">Unavailable</option>
               <option value="upcoming">Upcoming</option>
             </select>
           </div>
         </div>
 
+        <div class="field-row">
+          <div class="field">
+            <label>Brand</label>
+            <select id="ph-fBrand"><option value="">Loading...</option></select>
+          </div>
+          <div class="field">
+            <label>Name</label>
+            <input type="text" id="ph-fName" placeholder="e.g. Honor X6e" oninput="PH_onNameInput(this.value)"/>
+          </div>
+        </div>
+
+        <div id="ph-variantsContainer"></div>
+        <button type="button" class="action-btn" id="ph-addVariantBtn" onclick="PH_addVariantRow()" style="margin-bottom:0.85rem;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Variant
+        </button>
+
         <div class="field">
           <label>Released</label>
           <input type="date" id="ph-fReleased"/>
-        </div>
-
-        <div class="field">
-          <label>Cover Image URL</label>
-          <input type="text" id="ph-fImg" placeholder="https://..." oninput="(function(v){var p=document.getElementById('ph-imgPreview'),t=document.getElementById('ph-imgThumb');if(v){t.src=v;p.style.display='block';}else{p.style.display='none';}})(this.value)"/>
-          <div id="ph-imgPreview" style="margin-top:0.5rem;display:none;">
-            <img id="ph-imgThumb" src="" style="height:64px;border-radius:8px;border:1px solid var(--border);object-fit:cover;"/>
-          </div>
         </div>
 
         <div class="field">
@@ -572,40 +554,53 @@
 
         <div class="field">
           <label>Summary</label>
-          <textarea id="ph-fSummary" placeholder="সংক্ষিপ্ত রিভিউ..." rows="3"></textarea>
+          <textarea id="ph-fSummary" placeholder="Short review..." rows="3"></textarea>
+        </div>
+
+        <div class="spec-group-title">Our Rating <span style="font-weight:300;text-transform:none;letter-spacing:0;">(out of 10)</span></div>
+        <div class="field-row">
+          <div class="field">
+            <label>Display</label>
+            <input type="number" id="ph-fRating-display" placeholder="e.g. 9" min="0" max="10" step="0.1"/>
+          </div>
+          <div class="field">
+            <label>Performance</label>
+            <input type="number" id="ph-fRating-performance" placeholder="e.g. 9" min="0" max="10" step="0.1"/>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Camera</label>
+            <input type="number" id="ph-fRating-camera" placeholder="e.g. 9" min="0" max="10" step="0.1"/>
+          </div>
+          <div class="field">
+            <label>Battery</label>
+            <input type="number" id="ph-fRating-battery" placeholder="e.g. 9" min="0" max="10" step="0.1"/>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Design &amp; Build</label>
+            <input type="number" id="ph-fRating-design_build" placeholder="e.g. 9" min="0" max="10" step="0.1"/>
+          </div>
+          <div class="field">
+            <label>Software</label>
+            <input type="number" id="ph-fRating-software" placeholder="e.g. 9" min="0" max="10" step="0.1"/>
+          </div>
         </div>
 
         <div class="field-row">
           <div class="field">
             <label>Extra Pros <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional, one per line)</span></label>
-            <textarea id="ph-fExtraPros" placeholder="৩ বছর অফিসিয়াল ওয়ারেন্টি" rows="3"></textarea>
+            <textarea id="ph-fExtraPros" placeholder="3 years official warranty" rows="3"></textarea>
           </div>
           <div class="field">
             <label>Extra Cons <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional, one per line)</span></label>
-            <textarea id="ph-fExtraCons" placeholder="শোরুমে স্টক কম" rows="3"></textarea>
+            <textarea id="ph-fExtraCons" placeholder="Low stock in showroom" rows="3"></textarea>
           </div>
         </div>
 
         <div class="card-title" style="margin-top:1.4rem;">Specifications</div>
-        <div class="spec-group-title">Network</div>
-        <div class="field-row">
-          <div class="field">
-            <label>2G Bands</label>
-            <input type="text" id="ph-fSpec-net-bands2g" placeholder="e.g. GSM 850/900/1800/1900"/>
-          </div>
-          <div class="field">
-            <label>3G Bands</label>
-            <input type="text" id="ph-fSpec-net-bands3g" placeholder="e.g. HSDPA 850/900/2100"/>
-          </div>
-          <div class="field">
-            <label>4G Bands</label>
-            <input type="text" id="ph-fSpec-net-bands4g" placeholder="e.g. LTE band 1,3,5,8,40"/>
-          </div>
-          <div class="field">
-            <label>5G Bands</label>
-            <input type="text" id="ph-fSpec-net-bands5g" placeholder="e.g. SA/NSA - n1,n3,n5,n78"/>
-          </div>
-        </div>
         <div class="spec-group-title">Body</div>
         <div class="field-row">
           <div class="field">
@@ -622,7 +617,14 @@
           </div>
           <div class="field">
             <label>SIM</label>
-            <input type="text" id="ph-fSpec-body-sim" placeholder="e.g. Dual SIM (Nano-SIM)"/>
+            <select id="ph-fSpec-body-sim">
+              <option value="">Select...</option>
+              <option value="Single SIM">Single SIM</option>
+              <option value="Dual SIM (Nano-SIM)">Dual SIM (Nano-SIM)</option>
+              <option value="Dual SIM + eSIM">Dual SIM + eSIM</option>
+              <option value="Hybrid (Nano-SIM + microSD)">Hybrid (Nano-SIM + microSD)</option>
+              <option value="eSIM only">eSIM only</option>
+            </select>
           </div>
           <div class="field">
             <label>Protection</label>
@@ -633,7 +635,17 @@
         <div class="field-row">
           <div class="field">
             <label>Type</label>
-            <input type="text" id="ph-fSpec-display-type" placeholder="e.g. IPS LCD"/>
+            <select id="ph-fSpec-display-type">
+              <option value="">Select...</option>
+              <option value="IPS LCD">IPS LCD</option>
+              <option value="TFT">TFT</option>
+              <option value="OLED">OLED</option>
+              <option value="AMOLED">AMOLED</option>
+              <option value="Super AMOLED">Super AMOLED</option>
+              <option value="Dynamic AMOLED">Dynamic AMOLED</option>
+              <option value="LTPO AMOLED">LTPO AMOLED</option>
+              <option value="P-OLED">P-OLED</option>
+            </select>
           </div>
           <div class="field">
             <label>Size (inch)</label>
@@ -645,7 +657,14 @@
           </div>
           <div class="field">
             <label>Refresh Rate (Hz)</label>
-            <input type="number" id="ph-fSpec-display-refresh_hz" placeholder="e.g. 90"/>
+            <select id="ph-fSpec-display-refresh_hz">
+              <option value="">Select...</option>
+              <option value="60">60 Hz</option>
+              <option value="90">90 Hz</option>
+              <option value="120">120 Hz</option>
+              <option value="144">144 Hz</option>
+              <option value="165">165 Hz</option>
+            </select>
           </div>
           <div class="field">
             <label>Brightness (nits)</label>
@@ -655,8 +674,20 @@
         <div class="spec-group-title">Platform</div>
         <div class="field-row">
           <div class="field">
+            <label>Version</label>
+            <input type="text" id="ph-fSpec-platform-os_version" placeholder="e.g. 14, 17.5"/>
+          </div>
+          <div class="field">
             <label>OS</label>
-            <input type="text" id="ph-fSpec-platform-os" placeholder="e.g. Android 14"/>
+            <select id="ph-fSpec-platform-os">
+              <option value="">Select...</option>
+              <option value="Android">Android</option>
+              <option value="iOS">iOS</option>
+              <option value="HarmonyOS">HarmonyOS</option>
+              <option value="KaiOS">KaiOS</option>
+              <option value="Nucleus OS">Nucleus OS</option>
+              <option value="Proprietary OS">Proprietary OS</option>
+            </select>
           </div>
           <div class="field">
             <label>Chipset</label>
@@ -686,10 +717,6 @@
               <input type="checkbox" id="ph-fSpec-memory-card_slot" style="width:16px;height:16px;accent-color:var(--accent);"/>
               microSD Card Slot
             </label>
-          </div>
-          <div class="field">
-            <label>Variants</label>
-            <input type="text" id="ph-fSpec-memory-variants" placeholder="e.g. 4/64GB, 6/128GB, 8/256GB"/>
           </div>
         </div>
         <div class="spec-group-title">Main Camera</div>
@@ -744,16 +771,33 @@
         <div class="spec-group-title">Connectivity</div>
         <div class="field-row">
           <div class="field">
+            <label>Network</label>
+            <input type="text" id="ph-fSpec-conn-network" placeholder="e.g. 2G/3G/4G/5G, LTE band 1,3,5,8,40"/>
+          </div>
+          <div class="field">
             <label>WLAN</label>
             <input type="text" id="ph-fSpec-conn-wlan" placeholder="e.g. Wi-Fi 802.11 b/g/n"/>
           </div>
           <div class="field">
             <label>Bluetooth</label>
-            <input type="text" id="ph-fSpec-conn-bluetooth" placeholder="e.g. 5.0"/>
+            <select id="ph-fSpec-conn-bluetooth">
+              <option value="">Select...</option>
+              <option value="4.2">4.2</option>
+              <option value="5.0">5.0</option>
+              <option value="5.1">5.1</option>
+              <option value="5.2">5.2</option>
+              <option value="5.3">5.3</option>
+              <option value="5.4">5.4</option>
+            </select>
           </div>
           <div class="field">
             <label>GPS</label>
-            <input type="text" id="ph-fSpec-conn-gps" placeholder="e.g. Yes, with A-GPS"/>
+            <select id="ph-fSpec-conn-gps">
+              <option value="">Select...</option>
+              <option value="Yes (A-GPS, GLONASS)">Yes (A-GPS, GLONASS)</option>
+              <option value="Yes (A-GPS)">Yes (A-GPS)</option>
+              <option value="No">No</option>
+            </select>
           </div>
           <div class="field">
             <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;text-transform:none;letter-spacing:0;font-size:0.83rem;color:var(--text);">
@@ -769,15 +813,20 @@
           </div>
           <div class="field">
             <label>USB</label>
-            <input type="text" id="ph-fSpec-conn-usb" placeholder="e.g. USB Type-C 2.0"/>
+            <select id="ph-fSpec-conn-usb">
+              <option value="">Select...</option>
+              <option value="USB Type-C 2.0">USB Type-C 2.0</option>
+              <option value="USB Type-C 3.1">USB Type-C 3.1</option>
+              <option value="USB Type-C 3.2">USB Type-C 3.2</option>
+              <option value="Micro USB">Micro USB</option>
+              <option value="Lightning">Lightning</option>
+            </select>
           </div>
         </div>
         <div class="spec-group-title">Features</div>
-        <div class="field-row">
-          <div class="field">
-            <label>Sensors</label>
-            <input type="text" id="ph-fSpec-features-sensors" placeholder="e.g. Fingerprint, accelerometer, proximity"/>
-          </div>
+        <div class="field">
+          <label>Sensors</label>
+          <input type="text" id="ph-fSpec-features-sensors" placeholder="e.g. Fingerprint, accelerometer, proximity"/>
         </div>
         <div class="spec-group-title">Battery</div>
         <div class="field-row">
@@ -863,10 +912,8 @@
 
         <div class="field-row">
           <div class="field">
-            <label>UID <span style="font-weight:300;text-transform:none;letter-spacing:0;">(alphanumeric)</span></label>
-            <div style="display:flex;gap:0.4rem;align-items:center;">
-              <input type="text" id="br-fUid" placeholder="e.g. a1b2c3" readonly style="flex:1;font-family:monospace;font-size:0.82rem;background:var(--bg);color:var(--muted);"/>
-            </div>
+            <label>Slug</label>
+            <input type="text" id="br-fSlug" placeholder="e.g. samsung" oninput="this.dataset.manual='1'"/>
           </div>
           <div class="field">
             <label>ID <span style="font-weight:300;text-transform:none;letter-spacing:0;">(numeric)</span></label>
@@ -876,10 +923,6 @@
         <div class="field">
           <label>Brand Name</label>
           <input type="text" id="br-fTitle" placeholder="e.g. Samsung" oninput="(function(v){var s=document.getElementById('br-fSlug');if(s&&!s.dataset.manual)s.value=v.toLowerCase().replace(/[^\w\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').trim();})(this.value)"/>
-        </div>
-        <div class="field">
-          <label>Slug</label>
-          <input type="text" id="br-fSlug" placeholder="e.g. samsung" oninput="this.dataset.manual='1'"/>
         </div>
 
         <div class="field">
@@ -1698,15 +1741,14 @@
 
       // ─── Spec schema (group -> id-suffix, field list) ─────
       const SPEC_GROUPS = {
-        network:       { id: 'net',        fields: ['bands2g','bands3g','bands4g','bands5g'] },
         body:          { id: 'body',       fields: ['dimensions','weight_g','build','sim','protection'] },
         display:       { id: 'display',    fields: ['type','size_inch','resolution','refresh_hz','brightness_nits'] },
-        platform:      { id: 'platform',   fields: ['os','chipset','cpu','gpu'] },
-        memory:        { id: 'memory',     fields: ['ram_gb','storage_gb','card_slot','variants'] },
+        platform:      { id: 'platform',   fields: ['os_version','os','chipset','cpu','gpu'] },
+        memory:        { id: 'memory',     fields: ['ram_gb','storage_gb','card_slot'] },
         main_camera:   { id: 'maincam',    fields: ['main_camera_mp','main_camera_setup','main_camera_features','main_camera_video'] },
         selfie_camera: { id: 'selfiecam',  fields: ['selfie_camera_mp','selfie_camera_setup','selfie_camera_video'] },
         sound:         { id: 'sound',      fields: ['loudspeaker','jack_3_5mm'] },
-        connectivity:  { id: 'conn',       fields: ['wlan','bluetooth','gps','nfc','fm_radio','usb'] },
+        connectivity:  { id: 'conn',       fields: ['network','wlan','bluetooth','gps','nfc','fm_radio','usb'] },
         features:      { id: 'features',   fields: ['sensors'] },
         battery:       { id: 'battery',    fields: ['capacity_mah','charging_watt','wireless','reverse'] },
       };
@@ -1714,6 +1756,71 @@
       const SPEC_NUM_FIELDS  = new Set(['weight_g','size_inch','refresh_hz','brightness_nits','capacity_mah','charging_watt']);
 
       function PH_specFieldId(groupId, field) { return `ph-fSpec-${groupId}-${field}`; }
+
+      // ─── Variants & Price (dynamic rows) ──────────────────
+      let PH_variantIdx = 0;
+
+      function PH_variantRowHtml(idx, variant, price) {
+        return `<div class="ph-variant-row" data-idx="${idx}" style="display:flex;align-items:flex-start;gap:0.5rem;">
+          <div class="field-row" style="flex:1;margin-bottom:0;">
+            <div class="field">
+              <label>Variant</label>
+              <input type="text" class="ph-fVariant" placeholder="e.g. 4/64" value="${PH_esc(variant)}"/>
+            </div>
+            <div class="field">
+              <label>Price (৳)</label>
+              <input type="number" class="ph-fVariantPrice" placeholder="e.g. 22000" min="0" step="1" value="${price === undefined || price === null ? '' : price}"/>
+            </div>
+          </div>
+          <button type="button" class="ph-variant-remove" onclick="PH_removeVariantRow(${idx})" title="Remove variant" style="flex-shrink:0;width:30px;height:30px;margin-top:1.55rem;border:1px solid #e53e3e;color:#e53e3e;background:transparent;border-radius:8px;cursor:pointer;font-size:1rem;line-height:1;">×</button>
+        </div>`;
+      }
+
+      window.PH_addVariantRow = function(variant, price) {
+        const container = document.getElementById("ph-variantsContainer");
+        const idx = PH_variantIdx++;
+        container.insertAdjacentHTML("beforeend", PH_variantRowHtml(idx, variant || "", price === undefined ? "" : price));
+      };
+
+      window.PH_removeVariantRow = function(idx) {
+        const container = document.getElementById("ph-variantsContainer");
+        const rows = container.querySelectorAll(".ph-variant-row");
+        const row = container.querySelector(`.ph-variant-row[data-idx="${idx}"]`);
+        if (!row) return;
+        if (rows.length <= 1) {
+          row.querySelector(".ph-fVariant").value = "";
+          row.querySelector(".ph-fVariantPrice").value = "";
+          return;
+        }
+        row.remove();
+      };
+
+      function PH_gatherVariants() {
+        const rows = document.querySelectorAll("#ph-variantsContainer .ph-variant-row");
+        const variants = [];
+        rows.forEach(row => {
+          const variant  = row.querySelector(".ph-fVariant").value.trim();
+          const priceRaw = row.querySelector(".ph-fVariantPrice").value.trim();
+          if (variant || priceRaw) variants.push({ variant, price: priceRaw ? Number(priceRaw) : 0 });
+        });
+        return variants;
+      }
+
+      function PH_populateVariants(variants) {
+        document.getElementById("ph-variantsContainer").innerHTML = "";
+        PH_variantIdx = 0;
+        if (Array.isArray(variants) && variants.length) {
+          variants.forEach(v => PH_addVariantRow(v.variant || "", v.price === undefined || v.price === null ? "" : v.price));
+        } else {
+          PH_addVariantRow();
+        }
+      }
+
+      function PH_clearVariants() {
+        document.getElementById("ph-variantsContainer").innerHTML = "";
+        PH_variantIdx = 0;
+        PH_addVariantRow();
+      }
 
       function PH_gatherSpecs() {
         const specs = {};
@@ -1763,13 +1870,37 @@
         });
       }
 
-      // ─── UID gen ────────────────────────────────────────
-      function PH_makeUid() {
-        const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-        let s = "";
-        for (let i = 0; i < 6; i++) s += chars[Math.floor(Math.random() * chars.length)];
-        return s;
+      // ─── Our Rating (out of 10) ────────────────────────────
+      const RATING_FIELDS = ['display','performance','camera','battery','design_build','software'];
+
+      function PH_gatherRating() {
+        const rating = {};
+        RATING_FIELDS.forEach(field => {
+          const el = document.getElementById('ph-fRating-' + field);
+          if (!el) return;
+          const v = el.value.trim();
+          rating[field] = v ? Number(v) : null;
+        });
+        return rating;
       }
+
+      function PH_populateRating(rating) {
+        rating = rating || {};
+        RATING_FIELDS.forEach(field => {
+          const el = document.getElementById('ph-fRating-' + field);
+          if (!el) return;
+          el.value = (rating[field] === undefined || rating[field] === null) ? '' : rating[field];
+        });
+      }
+
+      function PH_clearRating() {
+        RATING_FIELDS.forEach(field => {
+          const el = document.getElementById('ph-fRating-' + field);
+          if (el) el.value = '';
+        });
+      }
+
+      // ─── Slug gen ────────────────────────────────────────
       function PH_genSlug(name) {
         return name.toLowerCase().replace(/[^\w\s-]/g,'').trim().replace(/[\s_-]+/g,'-');
       }
@@ -1817,9 +1948,6 @@
           const snap = await get(child(ref(db), 'phones'));
           allPhones = snap.exists() ? snap.val() : {};
           PH_renderItems();
-          if (!PH_editingKey && !document.getElementById("ph-fUid").value) {
-            document.getElementById("ph-fUid").value = PH_makeUid();
-          }
         } catch(e) {
           showToast("Failed to load: " + e.message, "error-t");
         }
@@ -1840,9 +1968,7 @@
             const imgTag = p.img
               ? `<img class="li-thumb" src="${PH_esc(p.img)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""/><div class="li-thumb-placeholder" style="display:none;">📱</div>`
               : `<div class="li-thumb-placeholder">📱</div>`;
-            const priceStr = p.price ? '৳' + Number(p.price).toLocaleString() : '—';
-            const statusStr = p.status ? p.status.charAt(0).toUpperCase() + p.status.slice(1) : '—';
-            return `<div class="list-item">${imgTag}<div class="li-info"><div class="li-name">${PH_esc(p.name || key)}</div><div class="li-meta"><span class="li-id">${PH_esc(priceStr)}</span><span class="li-cat">${PH_esc(PH_brandName(p.brand) || '—')} · ${PH_esc(statusStr)}</span></div></div><div class="li-actions"><button class="si-btn edit" onclick="PH_editItem('${key}')">Edit</button><button class="si-btn del" style="color:#e53e3e;border-color:#e53e3e;" onclick="PH_deleteItem('${key}')">Delete</button></div></div>`;
+            return `<div class="list-item">${imgTag}<div class="li-info"><div class="li-name">${PH_esc(p.name || key)}</div><div class="li-meta"><span class="li-cat">${PH_esc(PH_brandName(p.brand) || '—')}</span></div></div><div class="li-actions"><button class="si-btn edit" onclick="PH_editItem('${key}')">Edit</button><button class="si-btn del" style="color:#e53e3e;border-color:#e53e3e;" onclick="PH_deleteItem('${key}')">Delete</button></div></div>`;
           },
           `<div class="empty-state"><div class="empty-icon">📱</div>No phones yet. Add one above!</div>`
         );
@@ -1852,29 +1978,29 @@
 
       // ─── SUBMIT ──────────────────────────────────────────
       window.PH_submitPhone = async function() {
-        const uid       = (document.getElementById("ph-fUid").value.trim() || PH_makeUid()).replace(/[^a-zA-Z0-9_-]/g, "");
-        const idRaw     = document.getElementById("ph-fId").value.trim();
-        const id        = idRaw ? Number(idRaw) : null;
         const name      = document.getElementById("ph-fName").value.trim();
         const slug      = document.getElementById("ph-fSlug").value.trim() || PH_genSlug(name);
         const brand     = document.getElementById("ph-fBrand").value.trim();
-        const priceRaw  = document.getElementById("ph-fPrice").value.trim();
-        const price     = priceRaw ? Number(priceRaw) : 0;
+        const variants  = PH_gatherVariants();
+        const price     = variants.length ? Math.min(...variants.map(v => v.price)) : 0;
         const status    = document.getElementById("ph-fStatus").value;
         const released  = document.getElementById("ph-fReleased").value;
-        const img       = document.getElementById("ph-fImg").value.trim();
         const galleryRaw = document.getElementById("ph-fGallery").value.trim();
         const gallery   = galleryRaw ? galleryRaw.split("\n").map(s => s.trim()).filter(Boolean) : [];
+        const img       = gallery[0] || "";
         const summary   = document.getElementById("ph-fSummary").value.trim();
         const prosRaw   = document.getElementById("ph-fExtraPros").value.trim();
         const consRaw   = document.getElementById("ph-fExtraCons").value.trim();
         const extraPros = prosRaw ? prosRaw.split("\n").map(s => s.trim()).filter(Boolean) : [];
         const extraCons = consRaw ? consRaw.split("\n").map(s => s.trim()).filter(Boolean) : [];
         const specs     = PH_gatherSpecs();
+        const rating    = PH_gatherRating();
 
         if (!name)  { showToast("Name is required!", "error-t"); return; }
+        if (!slug)  { showToast("Slug is required!", "error-t"); document.getElementById("ph-fSlug").focus(); return; }
 
-        const key = PH_editingKey || uid;
+        const slugKey = slug.replace(/[.#$\[\]\/]/g, '-');
+        const key = PH_editingKey || slugKey;
         const slugTaken = Object.entries(allPhones).some(([k, p]) => k !== key && (p.slug || "") === slug);
         if (slugTaken) {
           showToast("এই স্লাগ (" + slug + ") আগে থেকেই ব্যবহৃত হচ্ছে — অন্য একটা দাও!", "error-t");
@@ -1890,11 +2016,14 @@
           const data = {
             name, slug, brand, price, status, released, img, gallery, summary,
             createdAt: existingCreatedAt || Date.now(),
-            specs,
+            updatedAt: Date.now(),
+            specs, rating,
           };
+          if (variants.length) data.variants = variants;
           if (extraPros.length) data.extra_pros = extraPros;
           if (extraCons.length) data.extra_cons = extraCons;
-          if (id !== null && !Number.isNaN(id)) data.id = id;
+          const existingId = PH_editingKey && allPhones[key] ? allPhones[key].id : null;
+          if (existingId !== null && existingId !== undefined) data.id = existingId;
 
           await set(ref(db, 'phones/' + key), data);
           allPhones[key] = data;
@@ -1913,27 +2042,19 @@
       window.PH_editItem = function(key) {
         const p = allPhones[key]; if (!p) return;
         PH_editingKey = key;
-        document.getElementById("ph-fUid").value       = key;
-        document.getElementById("ph-fId").value        = (p.id !== undefined && p.id !== null) ? p.id : "";
         document.getElementById("ph-fName").value      = p.name     || "";
         document.getElementById("ph-fSlug").value      = p.slug     || "";
         document.getElementById("ph-fSlug").dataset.auto = 'false';
         document.getElementById("ph-fBrand").value     = p.brand    || "";
-        document.getElementById("ph-fPrice").value     = p.price    || "";
-        document.getElementById("ph-fStatus").value    = p.status   || "official";
+        PH_populateVariants(Array.isArray(p.variants) && p.variants.length ? p.variants : (p.price ? [{ variant: "", price: p.price }] : []));
+        document.getElementById("ph-fStatus").value    = p.status   || "available";
         document.getElementById("ph-fReleased").value  = p.released || "";
-        document.getElementById("ph-fImg").value       = p.img      || "";
         document.getElementById("ph-fGallery").value   = Array.isArray(p.gallery) ? p.gallery.join("\n") : "";
         document.getElementById("ph-fSummary").value   = p.summary  || "";
         document.getElementById("ph-fExtraPros").value = Array.isArray(p.extra_pros) ? p.extra_pros.join("\n") : "";
         document.getElementById("ph-fExtraCons").value = Array.isArray(p.extra_cons) ? p.extra_cons.join("\n") : "";
         PH_populateSpecs(p.specs);
-        if (p.img) {
-          document.getElementById('ph-imgThumb').src = p.img;
-          document.getElementById('ph-imgPreview').style.display = 'block';
-        } else {
-          document.getElementById('ph-imgPreview').style.display = 'none';
-        }
+        PH_populateRating(p.rating);
         document.getElementById("ph-formTitle").textContent = "Edit Phone — " + (p.name || key);
         document.getElementById("ph-submitBtn").innerHTML = `✎ Update Phone`;
         document.getElementById("ph-addCard").scrollIntoView({ behavior: "smooth" });
@@ -1942,12 +2063,12 @@
       window.PH_cancelEdit = function() { PH_editingKey = null; PH_clearForm(); };
 
       function PH_clearForm() {
-        ["ph-fId","ph-fName","ph-fSlug","ph-fBrand","ph-fPrice","ph-fReleased","ph-fImg","ph-fGallery","ph-fSummary","ph-fExtraPros","ph-fExtraCons"].forEach(id => document.getElementById(id).value = "");
-        document.getElementById("ph-fStatus").value = "official";
+        ["ph-fName","ph-fSlug","ph-fBrand","ph-fReleased","ph-fGallery","ph-fSummary","ph-fExtraPros","ph-fExtraCons"].forEach(id => document.getElementById(id).value = "");
+        document.getElementById("ph-fStatus").value = "available";
         document.getElementById("ph-fSlug").dataset.auto = 'true';
-        document.getElementById("ph-fUid").value = PH_makeUid();
+        PH_clearVariants();
         PH_clearSpecs();
-        document.getElementById('ph-imgPreview').style.display = 'none';
+        PH_clearRating();
         document.getElementById("ph-formTitle").textContent = "Add New Phone";
         document.getElementById("ph-submitBtn").innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Phone`;
         PH_editingKey = null;
@@ -1968,6 +2089,7 @@
       };
 
       // ─── INIT ─────────────────────────────────────────────
+      PH_addVariantRow();
       PH_loadBrandsList();
 
     })();
@@ -2141,17 +2263,6 @@
         return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
       }
 
-      function BR_makeUid() {
-        const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-        let s = "";
-        for (let i = 0; i < 6; i++) s += chars[Math.floor(Math.random() * chars.length)];
-        return s;
-      }
-
-      window.BR_genUid = function() {
-        document.getElementById("br-fUid").value = BR_makeUid();
-      };
-
       // ─── LOAD ──────────────────────────────────────────────
       window.BR_loadAll = async function() {
         const btn = document.getElementById("br-refreshBtn");
@@ -2160,9 +2271,6 @@
           const snap = await get(child(ref(db), 'brands'));
           BR_allItems = snap.exists() ? snap.val() : {};
           BR_renderItems(BR_allItems);
-          if (!BR_editingKey && !document.getElementById("br-fUid").value) {
-            document.getElementById("br-fUid").value = BR_makeUid();
-          }
         } catch(e) {
           showToast("Failed to load: " + e.message, "error-t");
         }
@@ -2192,7 +2300,6 @@
 
       // ─── SUBMIT ────────────────────────────────────────────
       window.BR_submitBrand = async function() {
-        const uid     = (document.getElementById("br-fUid").value.trim() || BR_makeUid()).replace(/[^a-zA-Z0-9_-]/g, "");
         const id      = parseInt(document.getElementById("br-fId").value) || 0;
         const title   = document.getElementById("br-fTitle").value.trim();
         const slug    = document.getElementById("br-fSlug").value.trim() || title.toLowerCase().replace(/[^\w\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').trim();
@@ -2200,12 +2307,21 @@
         const desc    = document.getElementById("br-fDesc").value.trim();
 
         if (!title) { showToast("Name is required!", "error-t"); return; }
+        if (!slug)  { showToast("Slug is required!", "error-t"); document.getElementById("br-fSlug").focus(); return; }
+
+        const uid = slug.replace(/[.#$\[\]\/]/g, '-');
+        const key = BR_editingKey || uid;
+        const slugTaken = Object.entries(BR_allItems).some(([k, a]) => k !== key && (a.slug || "") === slug);
+        if (slugTaken) {
+          showToast("এই স্লাগ (" + slug + ") আগে থেকেই ব্যবহৃত হচ্ছে — অন্য একটা দাও!", "error-t");
+          document.getElementById("br-fSlug").focus();
+          return;
+        }
 
         const btn = document.getElementById("br-submitBtn");
         btn.disabled = true; btn.textContent = "Saving...";
 
         try {
-          const key  = BR_editingKey || uid;
           const data = { uid, id, title, slug, img, desc, createdAt: Date.now() };
           await set(ref(db, 'brands/' + key), data);
           BR_allItems[key] = data;
@@ -2224,10 +2340,10 @@
       window.BR_editItem = function(key) {
         const a = BR_allItems[key]; if (!a) return;
         BR_editingKey = key;
-        document.getElementById("br-fUid").value   = a.uid   || "";
         document.getElementById("br-fId").value    = a.id    || "";
         document.getElementById("br-fTitle").value = a.title || "";
         document.getElementById("br-fSlug").value  = a.slug  || "";
+        document.getElementById("br-fSlug").dataset.manual = '1';
         document.getElementById("br-fImg").value   = a.img   || "";
         document.getElementById("br-fDesc").value  = a.desc  || "";
         if (a.img) {
@@ -2242,15 +2358,15 @@
       window.BR_cancelEdit = function() { BR_editingKey = null; BR_clearForm(); };
 
       function BR_clearForm() {
-        ["br-fUid","br-fId","br-fTitle","br-fSlug","br-fImg","br-fDesc"].forEach(id => {
+        ["br-fId","br-fTitle","br-fSlug","br-fImg","br-fDesc"].forEach(id => {
           const el = document.getElementById(id);
           if (el) el.value = "";
         });
+        document.getElementById("br-fSlug").dataset.manual = '';
         document.getElementById('br-imgPreview').style.display = 'none';
         document.getElementById("br-formTitle").textContent = "Add New Brand";
         document.getElementById("br-submitBtn").innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Brand`;
         BR_editingKey = null;
-        document.getElementById("br-fUid").value = BR_makeUid();
       }
 
       // ─── DELETE ────────────────────────────────────────────
