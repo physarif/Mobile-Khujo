@@ -4,35 +4,6 @@
   .mk-section { padding: 0.75rem 0; margin-bottom: 0.5rem; }
   @media (min-width: 768px) { .mk-section { margin-left: 0.5rem; margin-right: 0.5rem; padding: 0.75rem 0.4rem; } }
 
-  /* Quick-filter chip row (ব্র্যান্ড / বাজেট) */
-  .mk-chip-row {
-    display: flex;
-    gap: 0.5rem;
-    overflow-x: auto;
-    padding: 0.25rem 1rem 0.75rem;
-    scrollbar-width: none;
-  }
-  .mk-chip-row::-webkit-scrollbar { display: none; }
-  @media (min-width: 768px) { .mk-chip-row { padding: 0.25rem 1.5rem 0.75rem; flex-wrap: wrap; overflow-x: visible; } }
-  .mk-chip {
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    white-space: nowrap;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #1e90ff;
-    background: #f0f8ff;
-    border: 1px solid #dbeeff;
-    padding: 0.35rem 0.9rem;
-    border-radius: 999px;
-    text-decoration: none;
-    transition: background 0.15s, color 0.15s;
-  }
-  .mk-chip:hover, .mk-chip:active { background: #1e90ff; color: #fff; border-color: #1e90ff; }
-  .dark .mk-chip { color: #8ec8ff; background: #1a2634; border-color: #2d3f52; }
-  .dark .mk-chip:hover, .dark .mk-chip:active { background: #1e90ff; color: #fff; border-color: #1e90ff; }
-
   /* Section header */
   .mk-section-header {
     display: flex;
@@ -197,25 +168,6 @@
 -->
 
 <main class="flex-1 py-4 md:py-6 md:px-8 lg:px-16 min-h-[calc(100vh-3.5rem)] min-w-0 overflow-hidden">
-
-  <!-- ব্র্যান্ড অনুযায়ী quick filter -->
-  <div class="mk-chip-row">
-    {{brand_chips}}
-    <!--
-      Chip template:
-      <a href="/brands/{{brand_slug}}.html" class="mk-chip">{{brand_name}}</a>
-    -->
-  </div>
-
-  <!-- বাজেট অনুযায়ী quick filter -->
-  <div class="mk-chip-row" style="padding-top:0; margin-top:-0.5rem;">
-    {{budget_chips}}
-    <!--
-      Chip template:
-      <a href="/budget/{{budget_slug}}.html" class="mk-chip">{{budget_label}}</a>
-      e.g. ১০ হাজারের নিচে, ১০-২০ হাজার, ২০-৩০ হাজার, ফ্ল্যাগশিপ
-    -->
-  </div>
 
   <!-- সর্বশেষ ফোন -->
   <section class="mk-section">
