@@ -1,4 +1,4 @@
-<!-- components/phone.html — ফোন ডিটেইল পেজ কন্টেন্ট + styling এখানে (MobileDokan-স্টাইল ডিজাইন) -->
+<!-- components/phone.html — Phone detail page content + styling (MobileDokan mobile-app style) -->
 <style>
   .mk-pd-wrap { max-width: 780px; margin: 0 auto; padding: 0 1rem; }
   @media (min-width: 768px) { .mk-pd-wrap { padding: 0 1.5rem; } }
@@ -9,33 +9,36 @@
   .mk-pd-crumb a:hover { text-decoration: underline; }
   .dark .mk-pd-crumb { color: #6b7280; }
 
-  /* ===== Hero (MobileDokan-style: centered product card) ===== */
+  /* ===== Hero ===== */
   .mk-pd-hero { text-align: center; padding-bottom: 0.4rem; }
 
   .mk-pd-name { font-size: 1.35rem; font-weight: 800; color: #1f2937; line-height: 1.35; margin: 0 0 0.55rem; }
   .dark .mk-pd-name { color: #f3f4f6; }
 
-  /* Status / release / brand meta row */
+  /* Status + release meta row */
   .mk-pd-metarow {
     display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
-    gap: 0.4rem 0.5rem; font-size: 0.8rem; color: #6b7280; margin-bottom: 1rem;
+    gap: 0.4rem 0.6rem; font-size: 0.83rem; color: #4b5563; margin-bottom: 1rem; font-weight: 600;
   }
-  .dark .mk-pd-metarow { color: #9ca3af; }
-  .mk-pd-metarow .mk-pd-dot { color: #d1d5db; }
+  .dark .mk-pd-metarow { color: #d1d5db; }
+  .mk-pd-metarow .mk-pd-dot { color: #d1d5db; font-weight: 400; }
   .dark .mk-pd-metarow .mk-pd-dot { color: #4b5563; }
 
-  .mk-pd-badge {
-    display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; font-weight: 700;
-    padding: 0.22rem 0.65rem; border-radius: 999px;
+  .mk-pd-status { display: inline-flex; align-items: center; gap: 0.35rem; }
+  .mk-pd-status::before {
+    font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 0.95rem;
   }
-  .mk-pd-badge.available { background: #dcfce7; color: #15803d; }
-  .mk-pd-badge.unavailable { background: #fee2e2; color: #b91c1c; }
-  .mk-pd-badge.upcoming { background: #dbeafe; color: #1d4ed8; }
-  .dark .mk-pd-badge.available { background: #14532d; color: #86efac; }
-  .dark .mk-pd-badge.unavailable { background: #450a0a; color: #fca5a5; }
-  .dark .mk-pd-badge.upcoming { background: #1e3a8a; color: #93c5fd; }
+  .mk-pd-status.available { color: #16a34a; }
+  .mk-pd-status.available::before { content: '\f058'; }
+  .mk-pd-status.unavailable { color: #dc2626; }
+  .mk-pd-status.unavailable::before { content: '\f057'; }
+  .mk-pd-status.upcoming { color: #1d4ed8; }
+  .mk-pd-status.upcoming::before { content: '\f017'; }
+  .dark .mk-pd-status.available { color: #4ade80; }
+  .dark .mk-pd-status.unavailable { color: #f87171; }
+  .dark .mk-pd-status.upcoming { color: #93c5fd; }
 
-  /* Product image — centered, framed card like MobileDokan */
+  /* Product image — centered, framed card */
   .mk-pd-imgwrap {
     width: 11.5rem; aspect-ratio: 3/4; margin: 0 auto 1rem; overflow: hidden;
     background: #f0f8ff; border: 1px solid #dbeeff; border-radius: 0.9rem;
@@ -45,7 +48,7 @@
   .dark .mk-pd-imgwrap { background: #1a2634; border-color: #2d3f52; box-shadow: 0 8px 22px rgba(0,0,0,0.35); }
   .mk-pd-imgwrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-  /* Price — big + bold like MobileDokan */
+  /* Price */
   .mk-pd-pricebox { margin: 0.2rem 0 1.1rem; }
   .mk-pd-pricelabel { font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.15rem; }
   .dark .mk-pd-pricelabel { color: #6b7280; }
@@ -77,7 +80,19 @@
   .mk-pd-summary { font-size: 0.98rem; line-height: 1.8; color: #374151; text-align: justify; margin: 0 0 1.4rem; }
   .dark .mk-pd-summary { color: #d1d5db; }
 
-  /* Section title (MobileDokan ## style — accent bar) */
+  /* ===== Variants — pill boxes ===== */
+  .mk-pd-variantwrap { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .mk-pd-variant-pill {
+    display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+    border: 1.5px solid #1e90ff; border-radius: 0.6rem; padding: 0.5rem 1rem; background: #f0f8ff;
+  }
+  .dark .mk-pd-variant-pill { background: #1a2634; border-color: #63b3ff; }
+  .mk-pd-variant-name { font-size: 0.82rem; font-weight: 700; color: #1f2937; }
+  .dark .mk-pd-variant-name { color: #f3f4f6; }
+  .mk-pd-variant-price { font-size: 0.82rem; font-weight: 700; color: #1e90ff; }
+  .dark .mk-pd-variant-price { color: #63b3ff; }
+
+  /* Section title */
   .mk-pd-section { margin: 1.8rem 0; }
   .mk-pd-title {
     font-size: 1.05rem; font-weight: 700; color: #1f2937; display: flex; align-items: center;
@@ -85,26 +100,37 @@
     border-left: 4px solid #1e90ff;
   }
   .dark .mk-pd-title { color: #f3f4f6; border-color: #63b3ff; }
+  .mk-pd-title-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin-bottom: 0.9rem; }
+  .mk-pd-title-row .mk-pd-title { margin-bottom: 0; }
+  .mk-pd-seefull { font-size: 0.8rem; font-weight: 700; color: #1e90ff; text-decoration: none; white-space: nowrap; }
+  .mk-pd-seefull:hover { text-decoration: underline; }
+  .dark .mk-pd-seefull { color: #63b3ff; }
 
-  /* Quick spec list — MobileDokan-style bullet rows: "- Label  Value" */
-  .mk-pd-quickgrid { display: grid; grid-template-columns: 1fr; gap: 0; border-radius: 0.7rem; overflow: hidden; border: 1px solid #e5e7eb; }
-  .dark .mk-pd-quickgrid { border-color: #33333c; }
-  .mk-pd-quickitem {
-    display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
-    background: #fff; padding: 0.65rem 0.9rem; position: relative; padding-left: 1.5rem;
+  /* ===== Key Specifications — icon grid ===== */
+  .mk-pd-osrow {
+    display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; font-weight: 700; color: #374151;
+    margin-bottom: 0.9rem;
   }
-  .mk-pd-quickitem:nth-child(even) { background: #f9fafb; }
-  .dark .mk-pd-quickitem { background: #18181c; }
-  .dark .mk-pd-quickitem:nth-child(even) { background: #202027; }
-  .mk-pd-quickitem::before {
-    content: ''; position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);
-    width: 6px; height: 6px; border-radius: 999px; background: #1e90ff;
+  .dark .mk-pd-osrow { color: #e5e7eb; }
+  .mk-pd-osrow i { color: #3ddc84; font-size: 1.15rem; }
+
+  .mk-pd-quickgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.9rem 1rem; }
+  .mk-pd-quickitem { display: flex; align-items: center; gap: 0.65rem; }
+  .mk-pd-quickicon {
+    flex-shrink: 0; width: 2.6rem; height: 2.6rem; border-radius: 999px; background: #f3f4f6;
+    display: flex; align-items: center; justify-content: center; color: #4b5563; font-size: 1.05rem;
   }
-  .dark .mk-pd-quickitem::before { background: #63b3ff; }
-  .mk-pd-quicklabel { font-size: 0.82rem; color: #6b7280; flex-shrink: 0; }
-  .dark .mk-pd-quicklabel { color: #9ca3af; }
-  .mk-pd-quickvalue { font-size: 0.85rem; font-weight: 700; color: #1f2937; text-align: right; }
+  .dark .mk-pd-quickicon { background: #26262c; color: #9ca3af; }
+  .mk-pd-quicklabel { font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.1rem; }
+  .dark .mk-pd-quicklabel { color: #6b7280; }
+  .mk-pd-quickvalue { font-size: 0.9rem; font-weight: 800; color: #1f2937; }
   .dark .mk-pd-quickvalue { color: #f3f4f6; }
+
+  .mk-pd-feature-strip {
+    display: flex; align-items: center; gap: 1.1rem; margin-top: 1.1rem; padding-top: 1rem;
+    border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 1.05rem;
+  }
+  .dark .mk-pd-feature-strip { border-color: #33333c; color: #9ca3af; }
 
   /* ===== Rating ===== */
   .mk-pd-rating-row { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.7rem; }
@@ -116,7 +142,7 @@
   .mk-pd-rating-num { width: 2.4rem; flex-shrink: 0; text-align: right; font-size: 0.85rem; font-weight: 800; color: #1e90ff; }
   .dark .mk-pd-rating-num { color: #63b3ff; }
 
-  /* Pros / cons — numbered like MobileDokan */
+  /* Pros / cons — numbered */
   .mk-pd-proscons { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
   @media (max-width: 420px) { .mk-pd-proscons { grid-template-columns: 1fr; } }
   .mk-pd-proscons h4 {
@@ -140,32 +166,21 @@
   .dark .mk-pd-pros li::before { background: #14532d; color: #86efac; }
   .dark .mk-pd-cons li::before { background: #450a0a; color: #fca5a5; }
 
-  /* Variants / price recap table */
-  .mk-pd-variants { width: 100%; border-collapse: collapse; font-size: 0.9rem; border-radius: 0.6rem; overflow: hidden; }
-  .mk-pd-variants td { padding: 0.6rem 0.8rem; border-bottom: 1px solid #e5e7eb; }
-  .dark .mk-pd-variants td { border-color: #33333c; }
-  .mk-pd-variants tr:nth-child(odd) td { background: #f9fafb; }
-  .dark .mk-pd-variants tr:nth-child(odd) td { background: #202027; }
-  .mk-pd-variants td:first-child { color: #374151; font-weight: 600; }
-  .dark .mk-pd-variants td:first-child { color: #d1d5db; }
-  .mk-pd-variants td:last-child { text-align: right; font-weight: 800; color: #16a34a; }
-  .dark .mk-pd-variants td:last-child { color: #4ade80; }
-
-  /* Spec table — grouped like MobileDokan spec sheet */
-  .mk-pd-spectable { width: 100%; border-collapse: collapse; font-size: 0.87rem; margin-bottom: 1.1rem; border: 1px solid #e5e7eb; border-radius: 0.6rem; overflow: hidden; }
-  .dark .mk-pd-spectable { border-color: #33333c; }
-  .mk-pd-spectable tr:nth-child(odd) { background: #f9fafb; }
-  .dark .mk-pd-spectable tr:nth-child(odd) { background: #202027; }
-  .mk-pd-spectable td { padding: 0.55rem 0.75rem; vertical-align: top; }
-  .mk-pd-spectable td:first-child { width: 38%; color: #6b7280; font-weight: 700; }
-  .dark .mk-pd-spectable td:first-child { color: #9ca3af; }
-  .mk-pd-spectable td:last-child { color: #1f2937; }
-  .dark .mk-pd-spectable td:last-child { color: #e5e7eb; }
+  /* ===== Full spec tables — clean two-column rows ===== */
+  .mk-pd-spectable { width: 100%; border-collapse: collapse; font-size: 0.87rem; margin-bottom: 1.2rem; }
+  .mk-pd-spectable td { padding: 0.7rem 0.2rem; vertical-align: top; border-bottom: 1px solid #eef0f3; }
+  .dark .mk-pd-spectable td { border-color: #2a2a30; }
+  .mk-pd-spectable tr:last-child td { border-bottom: none; }
+  .mk-pd-spectable td:first-child { width: 40%; color: #1f2937; font-weight: 700; }
+  .dark .mk-pd-spectable td:first-child { color: #e5e7eb; }
+  .mk-pd-spectable td:last-child { color: #6b7280; }
+  .dark .mk-pd-spectable td:last-child { color: #9ca3af; }
   .mk-pd-spec-group-title {
-    font-size: 0.84rem; font-weight: 800; color: #1e90ff; margin: 1.1rem 0 0.5rem;
-    text-transform: uppercase; letter-spacing: 0.04em;
+    font-size: 1rem; font-weight: 800; color: #1e90ff; margin: 1.6rem 0 0.3rem;
+    padding-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb;
   }
-  .dark .mk-pd-spec-group-title { color: #63b3ff; }
+  .mk-pd-spec-group-title:first-child { margin-top: 0; }
+  .dark .mk-pd-spec-group-title { color: #63b3ff; border-color: #33333c; }
 
   /* Disclaimer note */
   .mk-pd-disclaimer {
@@ -187,19 +202,19 @@
 <main class="mk-pd-wrap py-2 md:py-4">
 
   <p class="mk-pd-crumb">
-    <a href="/">হোম</a> ›
+    <a href="/">Home</a> ›
     <a href="/brands/{{phone_brand_slug}}.html">{{phone_brand_name}}</a> ›
     <span>{{phone_name}}</span>
   </p>
 
-  <!-- Hero: centered product card, MobileDokan-style -->
+  <!-- Hero -->
   <div class="mk-pd-hero">
     <h1 class="mk-pd-name">{{phone_name}}</h1>
 
     <p class="mk-pd-metarow">
-      <span class="mk-pd-badge {{phone_status_class}}">{{phone_status_label}}</span>
+      <span class="mk-pd-status {{phone_status_class}}">{{phone_status_label}}</span>
       <span class="mk-pd-dot">•</span>
-      <span>রিলিজ: {{phone_released_bn}}</span>
+      <span>Released: {{phone_released_bn}}</span>
     </p>
 
     <div class="mk-pd-imgwrap">
@@ -209,7 +224,7 @@
     {{gallery_thumbs_block}}
 
     <div class="mk-pd-pricebox">
-      <div class="mk-pd-pricelabel">মূল্য</div>
+      <div class="mk-pd-pricelabel">Price</div>
       <div class="mk-pd-price">{{phone_price_display}}</div>
     </div>
 
@@ -220,22 +235,32 @@
 
   <p class="mk-pd-summary">{{phone_summary}}</p>
 
+  {{variants_block}}
+
   {{quick_specs_block}}
 
   {{rating_block}}
 
   {{proscons_block}}
 
-  {{variants_block}}
+  <section class="mk-pd-section" id="full-specs">
+    <div class="mk-pd-title">Full Specifications</div>
 
-  <section class="mk-pd-section">
-    <div class="mk-pd-title">ফুল স্পেসিফিকেশন</div>
+    <div class="mk-pd-spec-group-title">General</div>
+    <table class="mk-pd-spectable"><tbody>
+      <tr><td>Brand</td><td>{{phone_brand_name}}</td></tr>
+      <tr><td>Model</td><td>{{phone_name}}</td></tr>
+      <tr><td>Released</td><td>{{phone_released_bn}}</td></tr>
+      <tr><td>Status</td><td>{{phone_status_label}}</td></tr>
+    </tbody></table>
+
     {{spec_sections}}
+
     <p class="mk-pd-disclaimer">
-      <i class="fas fa-circle-info"></i> এই পেজের তথ্য ১০০% নির্ভুল ও আপ-টু-ডেট এই নিশ্চয়তা আমরা দিচ্ছি না। কেনার আগে অফিসিয়াল সোর্স থেকে যাচাই করে নেওয়ার পরামর্শ দেওয়া হচ্ছে।
+      <i class="fas fa-circle-info"></i> We do not guarantee that the information on this page is 100% accurate and up to date. Please verify with an official source before purchasing.
     </p>
   </section>
 
-  <a href="/" class="mk-pd-back"><i class="fas fa-arrow-left"></i> সব ফোন দেখুন</a>
+  <a href="/" class="mk-pd-back"><i class="fas fa-arrow-left"></i> View All Phones</a>
 
 </main>
