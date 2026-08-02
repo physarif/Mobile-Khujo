@@ -1,0 +1,174 @@
+<!-- components/phone.html — ফোন ডিটেইল পেজ কন্টেন্ট + styling এখানে -->
+<style>
+  .mk-pd-wrap { max-width: 780px; margin: 0 auto; padding: 0 1rem; }
+  @media (min-width: 768px) { .mk-pd-wrap { padding: 0 1.5rem; } }
+
+  /* Breadcrumb */
+  .mk-pd-crumb { font-size: 0.8rem; color: #9ca3af; margin: 0.9rem 0 0.6rem; }
+  .mk-pd-crumb a { color: #1e90ff; text-decoration: none; }
+  .mk-pd-crumb a:hover { text-decoration: underline; }
+  .dark .mk-pd-crumb { color: #6b7280; }
+
+  /* Hero */
+  .mk-pd-hero { display: flex; gap: 1.1rem; align-items: flex-start; padding-bottom: 1rem; }
+  .mk-pd-imgwrap {
+    flex-shrink: 0; width: 8.5rem; aspect-ratio: 3/4; overflow: hidden;
+    background: #e5e7eb; box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+  }
+  @media (min-width: 640px) { .mk-pd-imgwrap { width: 11rem; } }
+  .dark .mk-pd-imgwrap { background: #374151; }
+  .mk-pd-imgwrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .mk-pd-name { font-size: 1.4rem; font-weight: 700; color: #1f2937; line-height: 1.3; margin: 0 0 0.25rem; }
+  .dark .mk-pd-name { color: #f3f4f6; }
+  .mk-pd-brand { font-size: 0.92rem; color: #6b7280; margin: 0 0 0.5rem; }
+  .mk-pd-brand a { color: #1e90ff; text-decoration: none; font-weight: 600; }
+  .mk-pd-brand a:hover { text-decoration: underline; }
+  .dark .mk-pd-brand { color: #9ca3af; }
+
+  .mk-pd-price { font-size: 1.3rem; font-weight: 700; color: #16a34a; margin: 0.2rem 0; }
+  .dark .mk-pd-price { color: #4ade80; }
+
+  .mk-pd-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.75rem; font-weight: 700;
+    padding: 0.2rem 0.6rem; border-radius: 999px; margin-bottom: 0.4rem;
+  }
+  .mk-pd-badge.available { background: #dcfce7; color: #15803d; }
+  .mk-pd-badge.unavailable { background: #fee2e2; color: #b91c1c; }
+  .mk-pd-badge.upcoming { background: #dbeafe; color: #1d4ed8; }
+  .dark .mk-pd-badge.available { background: #14532d; color: #86efac; }
+  .dark .mk-pd-badge.unavailable { background: #450a0a; color: #fca5a5; }
+  .dark .mk-pd-badge.upcoming { background: #1e3a8a; color: #93c5fd; }
+
+  .mk-pd-released { font-size: 0.8rem; color: #9ca3af; }
+  .dark .mk-pd-released { color: #6b7280; }
+
+  /* Gallery thumbs */
+  .mk-pd-gallery { display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.3rem 0 1rem; scrollbar-width: none; }
+  .mk-pd-gallery::-webkit-scrollbar { display: none; }
+  .mk-pd-gallery img {
+    width: 4.2rem; height: 5.6rem; object-fit: cover; flex-shrink: 0;
+    background: #e5e7eb; cursor: pointer;
+  }
+  .dark .mk-pd-gallery img { background: #374151; }
+
+  /* Summary */
+  .mk-pd-summary { font-size: 1rem; line-height: 1.75; color: #374151; text-align: justify; margin: 0.4rem 0 1.2rem; }
+  .dark .mk-pd-summary { color: #d1d5db; }
+
+  /* Section title (reuse mk style) */
+  .mk-pd-section { margin: 1.4rem 0; }
+  .mk-pd-title {
+    font-size: 1.05rem; font-weight: 700; color: #1f2937; display: flex; align-items: center;
+    gap: 0.6rem; margin-bottom: 0.8rem; letter-spacing: 0.01em;
+  }
+  .mk-pd-title::after { content: ''; flex: 1; height: 2px; background: #1e90ff; border-radius: 1px; }
+  .dark .mk-pd-title { color: #f3f4f6; }
+  .dark .mk-pd-title::after { background: #63b3ff; }
+
+  /* Quick spec grid */
+  .mk-pd-quickgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+  @media (min-width: 640px) { .mk-pd-quickgrid { grid-template-columns: repeat(3, 1fr); } }
+  .mk-pd-quickitem {
+    background: #f0f8ff; border: 1px solid #dbeeff; padding: 0.6rem 0.7rem;
+  }
+  .dark .mk-pd-quickitem { background: #1a2634; border-color: #2d3f52; }
+  .mk-pd-quicklabel { font-size: 0.72rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.15rem; }
+  .dark .mk-pd-quicklabel { color: #8ca0b8; }
+  .mk-pd-quickvalue { font-size: 0.92rem; font-weight: 700; color: #1f2937; }
+  .dark .mk-pd-quickvalue { color: #f3f4f6; }
+
+  /* Rating bars */
+  .mk-pd-rating-row { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.65rem; }
+  .mk-pd-rating-label { width: 6.2rem; flex-shrink: 0; font-size: 0.85rem; color: #4b5563; }
+  .dark .mk-pd-rating-label { color: #9ca3af; }
+  .mk-pd-rating-track { flex: 1; height: 0.5rem; background: #e5e7eb; border-radius: 999px; overflow: hidden; }
+  .dark .mk-pd-rating-track { background: #374151; }
+  .mk-pd-rating-fill { height: 100%; background: #1e90ff; border-radius: 999px; }
+  .dark .mk-pd-rating-fill { background: #63b3ff; }
+  .mk-pd-rating-num { width: 2.2rem; flex-shrink: 0; text-align: right; font-size: 0.85rem; font-weight: 700; color: #1e90ff; }
+  .dark .mk-pd-rating-num { color: #63b3ff; }
+
+  /* Pros / cons */
+  .mk-pd-proscons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .mk-pd-proscons h4 { font-size: 0.88rem; font-weight: 700; margin: 0 0 0.5rem; }
+  .mk-pd-pros h4 { color: #16a34a; }
+  .mk-pd-cons h4 { color: #dc2626; }
+  .dark .mk-pd-pros h4 { color: #4ade80; }
+  .dark .mk-pd-cons h4 { color: #f87171; }
+  .mk-pd-proscons ul { list-style: none; padding: 0; margin: 0; font-size: 0.86rem; color: #374151; }
+  .dark .mk-pd-proscons ul { color: #d1d5db; }
+  .mk-pd-proscons li { display: flex; gap: 0.4rem; margin-bottom: 0.45rem; line-height: 1.5; }
+  .mk-pd-pros li i { color: #16a34a; margin-top: 0.2rem; }
+  .mk-pd-cons li i { color: #dc2626; margin-top: 0.2rem; }
+
+  /* Variants table */
+  .mk-pd-variants { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  .mk-pd-variants td { padding: 0.55rem 0.75rem; border-bottom: 1px solid #e5e7eb; }
+  .dark .mk-pd-variants td { border-color: #374151; }
+  .mk-pd-variants td:first-child { color: #374151; }
+  .dark .mk-pd-variants td:first-child { color: #d1d5db; }
+  .mk-pd-variants td:last-child { text-align: right; font-weight: 700; color: #16a34a; }
+  .dark .mk-pd-variants td:last-child { color: #4ade80; }
+
+  /* Spec table */
+  .mk-pd-spectable { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-bottom: 0.9rem; }
+  .mk-pd-spectable tr:nth-child(odd) { background: #f9fafb; }
+  .dark .mk-pd-spectable tr:nth-child(odd) { background: #202027; }
+  .mk-pd-spectable td { padding: 0.5rem 0.7rem; vertical-align: top; }
+  .mk-pd-spectable td:first-child { width: 38%; color: #6b7280; font-weight: 600; }
+  .dark .mk-pd-spectable td:first-child { color: #9ca3af; }
+  .mk-pd-spectable td:last-child { color: #1f2937; }
+  .dark .mk-pd-spectable td:last-child { color: #e5e7eb; }
+  .mk-pd-spec-group-title { font-size: 0.85rem; font-weight: 700; color: #1e90ff; margin: 0.9rem 0 0.4rem; }
+  .dark .mk-pd-spec-group-title { color: #63b3ff; }
+
+  .mk-pd-back {
+    display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 600;
+    color: #1e90ff; text-decoration: none; margin: 1.2rem 0;
+  }
+  .mk-pd-back:hover { text-decoration: underline; }
+  .dark .mk-pd-back { color: #63b3ff; }
+</style>
+
+<main class="mk-pd-wrap py-2 md:py-4">
+
+  <p class="mk-pd-crumb">
+    <a href="/">হোম</a> ›
+    <a href="/brands/{{phone_brand_slug}}.html">{{phone_brand_name}}</a> ›
+    <span>{{phone_name}}</span>
+  </p>
+
+  <div class="mk-pd-hero">
+    <div class="mk-pd-imgwrap">
+      <img src="{{phone_image}}" alt="{{phone_name}}" loading="lazy">
+    </div>
+    <div>
+      <span class="mk-pd-badge {{phone_status_class}}">{{phone_status_label}}</span>
+      <h1 class="mk-pd-name">{{phone_name}}</h1>
+      <p class="mk-pd-brand">ব্র্যান্ড: <a href="/brands/{{phone_brand_slug}}.html">{{phone_brand_name}}</a></p>
+      <p class="mk-pd-price">{{phone_price_display}}</p>
+      <p class="mk-pd-released">রিলিজ: {{phone_released_bn}}</p>
+    </div>
+  </div>
+
+  {{gallery_thumbs_block}}
+
+  <p class="mk-pd-summary">{{phone_summary}}</p>
+
+  {{quick_specs_block}}
+
+  {{rating_block}}
+
+  {{proscons_block}}
+
+  {{variants_block}}
+
+  <section class="mk-pd-section">
+    <div class="mk-pd-title">ফুল স্পেসিফিকেশন</div>
+    {{spec_sections}}
+  </section>
+
+  <a href="/" class="mk-pd-back"><i class="fas fa-arrow-left"></i> সব ফোন দেখুন</a>
+
+</main>
