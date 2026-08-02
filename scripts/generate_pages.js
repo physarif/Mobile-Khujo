@@ -78,10 +78,26 @@ function formatDateBn(dateStr) {
 }
 
 const STATUS_LABELS = {
-  available: 'পাওয়া যাচ্ছে',
-  unavailable: 'স্টকে নেই',
-  upcoming: 'শীঘ্রই আসছে',
+  available: 'Available',
+  unavailable: 'Out of Stock',
+  upcoming: 'Coming Soon',
 };
+
+// দাম কে "৳50,000" স্টাইলে ফরম্যাট করে (ইংরেজি সংখ্যা, western grouping) — ফোন ডিটেইল পেজের জন্য
+function formatMoneyEn(n) {
+  const num = Number(n);
+  if (!num || isNaN(num) || num <= 0) return '';
+  return '৳' + num.toLocaleString('en-US');
+}
+
+const EN_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+function formatDateEn(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return escapeHtml(String(dateStr));
+  return `${d.getDate()} ${EN_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
 
 function statusLabel(status) {
   return STATUS_LABELS[status] || STATUS_LABELS.available;
@@ -157,104 +173,116 @@ const sidebarLinkTemplate = '<li><a href="{{href}}" class="hover:text-brand-500"
 // ফোন ডিটেইল পেজের জন্য spec/rating/pros-cons/variants বিল্ডার
 // ─────────────────────────────────────────────────────────
 
+const YES_NO = v => (v ? 'Yes' : 'No');
+
 const SPEC_GROUPS = [
   {
-    title: 'বডি',
+    title: 'Body',
     key: 'body',
     fields: [
-      ['dimensions', 'মাপ', v => v],
-      ['weight_g', 'ওজন', v => `${toBanglaNum(v)} গ্রাম`],
-      ['build', 'গঠন', v => v],
-      ['sim', 'সিম', v => v],
-      ['protection', 'সুরক্ষা', v => v],
+      ['dimensions', 'Dimensions', v => v],
+      ['weight_g', 'Weight', v => `${v} g`],
+      ['build', 'Build', v => v],
+      ['sim', 'SIM', v => v],
+      ['protection', 'Protection', v => v],
     ],
   },
   {
-    title: 'ডিসপ্লে',
+    title: 'Display',
     key: 'display',
     fields: [
-      ['type', 'ডিসপ্লে টাইপ', v => v],
-      ['size_inch', 'আকার', v => `${toBanglaNum(v)} ইঞ্চি`],
-      ['resolution', 'রেজুলিউশন', v => v],
-      ['refresh_hz', 'রিফ্রেশ রেট', v => `${toBanglaNum(v)} Hz`],
-      ['brightness_nits', 'উজ্জ্বলতা', v => `${toBanglaNum(v)} nits`],
+      ['type', 'Display Type', v => v],
+      ['size_inch', 'Screen Size', v => `${v} inches`],
+      ['resolution', 'Resolution', v => v],
+      ['pixel_density', 'Pixel Density', v => `${v} ppi`],
+      ['screen_to_body', 'Screen to Body Ratio', v => `${v}%`],
+      ['screen_protection', 'Screen Protection', v => v],
+      ['touch_screen', 'Touch Screen', v => v],
+      ['refresh_hz', 'Refresh Rate', v => `${v} Hz`],
+      ['brightness_nits', 'Brightness', v => `${v} nits`],
+      ['notch', 'Notch', v => v],
+      ['display_features', 'Features', v => v],
     ],
   },
   {
-    title: 'প্ল্যাটফর্ম',
+    title: 'Platform',
     key: 'platform',
     fields: [
-      ['os', 'অপারেটিং সিস্টেম', v => v],
-      ['os_version', 'ওএস ভার্সন', v => v],
-      ['chipset', 'চিপসেট', v => v],
-      ['cpu', 'সিপিইউ', v => v],
-      ['gpu', 'জিপিইউ', v => v],
+      ['os', 'Operating System', v => v],
+      ['os_version', 'OS Version', v => v],
+      ['ui', 'User Interface', v => v],
+      ['chipset', 'Chipset', v => v],
+      ['cpu', 'CPU', v => v],
+      ['cpu_cores', 'CPU Cores', v => v],
+      ['architecture', 'Architecture', v => v],
+      ['fabrication', 'Fabrication', v => v],
+      ['gpu', 'GPU', v => v],
     ],
   },
   {
-    title: 'মেমরি',
+    title: 'Memory',
     key: 'memory',
     fields: [
-      ['ram_gb', 'র‍্যাম', v => `${v} GB`],
-      ['storage_gb', 'স্টোরেজ', v => `${v} GB`],
-      ['card_slot', 'কার্ড স্লট', v => (v ? 'আছে' : 'নেই')],
+      ['ram_gb', 'RAM', v => `${v} GB`],
+      ['storage_gb', 'Storage', v => `${v} GB`],
+      ['card_slot', 'Card Slot', YES_NO],
     ],
   },
   {
-    title: 'মেইন ক্যামেরা',
+    title: 'Main Camera',
     key: 'main_camera',
     fields: [
-      ['main_camera_mp', 'রেজুলিউশন', v => v],
-      ['main_camera_setup', 'সেটআপ', v => v],
-      ['main_camera_features', 'ফিচার', v => v],
-      ['main_camera_video', 'ভিডিও', v => v],
+      ['main_camera_mp', 'Resolution', v => v],
+      ['main_camera_setup', 'Setup', v => v],
+      ['main_camera_features', 'Features', v => v],
+      ['main_camera_video', 'Video', v => v],
     ],
   },
   {
-    title: 'সেলফি ক্যামেরা',
+    title: 'Selfie Camera',
     key: 'selfie_camera',
     fields: [
-      ['selfie_camera_mp', 'রেজুলিউশন', v => v],
-      ['selfie_camera_setup', 'সেটআপ', v => v],
-      ['selfie_camera_video', 'ভিডিও', v => v],
+      ['selfie_camera_mp', 'Resolution', v => v],
+      ['selfie_camera_setup', 'Setup', v => v],
+      ['selfie_camera_video', 'Video', v => v],
     ],
   },
   {
-    title: 'সাউন্ড',
+    title: 'Sound',
     key: 'sound',
     fields: [
-      ['loudspeaker', 'লাউডস্পিকার', v => (v ? 'আছে' : 'নেই')],
-      ['jack_3_5mm', '৩.৫ মিমি জ্যাক', v => (v ? 'আছে' : 'নেই')],
+      ['loudspeaker', 'Loudspeaker', YES_NO],
+      ['jack_3_5mm', '3.5mm Jack', YES_NO],
     ],
   },
   {
-    title: 'কানেক্টিভিটি',
+    title: 'Connectivity',
     key: 'connectivity',
     fields: [
-      ['network', 'নেটওয়ার্ক', v => v],
-      ['wlan', 'ওয়াইফাই', v => v],
-      ['bluetooth', 'ব্লুটুথ', v => v],
-      ['gps', 'জিপিএস', v => v],
-      ['nfc', 'এনএফসি', v => (v ? 'আছে' : 'নেই')],
-      ['fm_radio', 'এফএম রেডিও', v => (v ? 'আছে' : 'নেই')],
-      ['usb', 'ইউএসবি', v => v],
+      ['network', 'Network', v => v],
+      ['wlan', 'WLAN', v => v],
+      ['bluetooth', 'Bluetooth', v => v],
+      ['gps', 'GPS', v => v],
+      ['nfc', 'NFC', YES_NO],
+      ['fm_radio', 'FM Radio', YES_NO],
+      ['usb', 'USB', v => v],
     ],
   },
   {
-    title: 'ফিচার',
+    title: 'Features',
     key: 'features',
     fields: [
-      ['sensors', 'সেন্সর', v => v],
+      ['sensors', 'Sensors', v => v],
     ],
   },
   {
-    title: 'ব্যাটারি',
+    title: 'Battery',
     key: 'battery',
     fields: [
-      ['capacity_mah', 'ক্যাপাসিটি', v => `${toBanglaNum(v)} mAh`],
-      ['charging_watt', 'চার্জিং স্পিড', v => `${toBanglaNum(v)} W`],
-      ['wireless', 'ওয়্যারলেস চার্জিং', v => (v ? 'আছে' : 'নেই')],
-      ['reverse', 'রিভার্স চার্জিং', v => (v ? 'আছে' : 'নেই')],
+      ['capacity_mah', 'Capacity', v => `${v} mAh`],
+      ['charging_watt', 'Charging', v => `${v}W wired`],
+      ['wireless', 'Wireless Charging', YES_NO],
+      ['reverse', 'Reverse Charging', YES_NO],
     ],
   },
 ];
@@ -282,39 +310,66 @@ function buildSpecSections(specs) {
   return html;
 }
 
-// হোমপেজ কার্ড ও ডিটেইল হেডারে দেখানোর জন্য কিছু কী স্পেসিফিকেশন বেছে নেওয়া
+// হোমপেজ কার্ড ও ডিটেইল হেডারে দেখানোর জন্য কিছু কী স্পেসিফিকেশন বেছে নেওয়া (আইকন গ্রিড — MobileDokan স্টাইল)
 function buildQuickSpecs(specs) {
   if (!specs) return '';
   const items = [
-    ['ডিসপ্লে', specs.display && specs.display.size_inch ? `${toBanglaNum(specs.display.size_inch)}″ ${specs.display.type || ''}`.trim() : ''],
-    ['চিপসেট', specs.platform && specs.platform.chipset],
-    ['র‍্যাম/রম', (specs.memory && (specs.memory.ram_gb || specs.memory.storage_gb)) ? `${specs.memory.ram_gb || '—'}/${specs.memory.storage_gb || '—'} GB` : ''],
-    ['মেইন ক্যামেরা', specs.main_camera && specs.main_camera.main_camera_mp],
-    ['ব্যাটারি', specs.battery && specs.battery.capacity_mah ? `${toBanglaNum(specs.battery.capacity_mah)} mAh` : ''],
-    ['ওএস', specs.platform && (specs.platform.os ? `${specs.platform.os} ${specs.platform.os_version || ''}`.trim() : '')],
-  ].filter(([, v]) => v);
+    ['fa-solid fa-hard-drive', 'Storage', specs.memory && specs.memory.storage_gb ? `${specs.memory.storage_gb}GB` : ''],
+    ['fa-solid fa-microchip', 'RAM', specs.memory && specs.memory.ram_gb ? `${specs.memory.ram_gb}GB` : ''],
+    ['fa-solid fa-camera', 'Main Camera', specs.main_camera && specs.main_camera.main_camera_mp],
+    ['fa-solid fa-camera-retro', 'Front Camera', specs.selfie_camera && specs.selfie_camera.selfie_camera_mp],
+    ['fa-solid fa-mobile-screen-button', 'Display', specs.display && specs.display.size_inch ? `${specs.display.size_inch}" ${specs.display.resolution || ''}`.trim() : ''],
+    ['fa-solid fa-battery-full', 'Battery', specs.battery && specs.battery.capacity_mah ? `${specs.battery.capacity_mah}mAh` : ''],
+  ].filter(([, , v]) => v);
 
   if (!items.length) return '';
 
+  const osLabel = specs.platform && specs.platform.os ? specs.platform.os : '';
+  const osRow = osLabel
+    ? `<div class="mk-pd-osrow"><i class="fa-brands fa-android"></i> ${escapeHtml(osLabel)}</div>`
+    : '';
+
   const grid = items
-    .map(([label, value]) => (
+    .map(([icon, label, value]) => (
       `<div class="mk-pd-quickitem">`
+      + `<div class="mk-pd-quickicon"><i class="${icon}"></i></div>`
+      + `<div class="mk-pd-quicktext">`
       + `<div class="mk-pd-quicklabel">${escapeHtml(label)}</div>`
       + `<div class="mk-pd-quickvalue">${escapeHtml(String(value))}</div>`
-      + `</div>`
+      + `</div></div>`
     ))
     .join('');
 
-  return `<section class="mk-pd-section"><div class="mk-pd-title">এক নজরে</div><div class="mk-pd-quickgrid">${grid}</div></section>`;
+  // ছোট ফিচার আইকন স্ট্রিপ — শুধু যেসব ফিচার ডেটায় আছে সেগুলোই দেখাবে
+  const featureChecks = [
+    ['fa-solid fa-fingerprint', specs.features && /finger/i.test(specs.features.sensors || '')],
+    ['fa-solid fa-bolt', specs.battery && Number(specs.battery.charging_watt) > 0],
+    ['fa-solid fa-droplet', specs.body && !!specs.body.protection],
+    ['fa-solid fa-wifi', specs.connectivity && !!specs.connectivity.wlan],
+    ['fa-solid fa-signal', specs.connectivity && !!specs.connectivity.network],
+    ['fa-brands fa-bluetooth-b', specs.connectivity && !!specs.connectivity.bluetooth],
+  ].filter(([, ok]) => ok);
+  const featureStrip = featureChecks.length
+    ? `<div class="mk-pd-feature-strip">${featureChecks.map(([icon]) => `<i class="${icon}"></i>`).join('')}</div>`
+    : '';
+
+  return (
+    `<section class="mk-pd-section" id="key-specs">`
+    + `<div class="mk-pd-title-row"><div class="mk-pd-title">Key Specifications</div><a href="#full-specs" class="mk-pd-seefull">See Full Specs <i class="fas fa-chevron-right"></i></a></div>`
+    + osRow
+    + `<div class="mk-pd-quickgrid">${grid}</div>`
+    + featureStrip
+    + `</section>`
+  );
 }
 
 const RATING_LABELS = {
-  display: 'ডিসপ্লে',
-  performance: 'পারফরম্যান্স',
-  camera: 'ক্যামেরা',
-  battery: 'ব্যাটারি',
-  design_build: 'ডিজাইন',
-  software: 'সফটওয়্যার',
+  display: 'Display',
+  performance: 'Performance',
+  camera: 'Camera',
+  battery: 'Battery',
+  design_build: 'Design',
+  software: 'Software',
 };
 
 function buildRatingBlock(rating) {
@@ -328,14 +383,14 @@ function buildRatingBlock(rating) {
         `<div class="mk-pd-rating-row">`
         + `<span class="mk-pd-rating-label">${escapeHtml(RATING_LABELS[key])}</span>`
         + `<span class="mk-pd-rating-track"><span class="mk-pd-rating-fill" style="width:${pct}%"></span></span>`
-        + `<span class="mk-pd-rating-num">${toBanglaNum(val)}</span>`
+        + `<span class="mk-pd-rating-num">${val}</span>`
         + `</div>`
       );
     })
     .filter(Boolean)
     .join('');
   if (!rows) return '';
-  return `<section class="mk-pd-section"><div class="mk-pd-title">রেটিং</div>${rows}</section>`;
+  return `<section class="mk-pd-section"><div class="mk-pd-title">Our Rating</div>${rows}</section>`;
 }
 
 function buildProsConsBlock(pros, cons) {
@@ -347,10 +402,10 @@ function buildProsConsBlock(pros, cons) {
   const consHtml = consList.map(c => `<li><i class="fas fa-times-circle"></i> ${escapeHtml(c)}</li>`).join('');
 
   return (
-    `<section class="mk-pd-section"><div class="mk-pd-title">সুবিধা ও অসুবিধা</div>`
+    `<section class="mk-pd-section"><div class="mk-pd-title">Pros & Cons</div>`
     + `<div class="mk-pd-proscons">`
-    + `<div class="mk-pd-pros"><h4>সুবিধা</h4><ul>${prosHtml || '<li>—</li>'}</ul></div>`
-    + `<div class="mk-pd-cons"><h4>অসুবিধা</h4><ul>${consHtml || '<li>—</li>'}</ul></div>`
+    + `<div class="mk-pd-pros"><h4>Pros</h4><ul>${prosHtml || '<li>—</li>'}</ul></div>`
+    + `<div class="mk-pd-cons"><h4>Cons</h4><ul>${consHtml || '<li>—</li>'}</ul></div>`
     + `</div></section>`
   );
 }
@@ -358,12 +413,17 @@ function buildProsConsBlock(pros, cons) {
 function buildVariantsBlock(variants) {
   const list = Array.isArray(variants) ? variants.filter(v => v && (v.variant || v.price)) : [];
   if (!list.length) return '';
-  const rows = list
-    .map(v => `<tr><td>${escapeHtml(v.variant || '—')}</td><td>${escapeHtml(formatMoney(v.price) || '—')}</td></tr>`)
+  const pills = list
+    .map(v => (
+      `<div class="mk-pd-variant-pill">`
+      + `<span class="mk-pd-variant-name">${escapeHtml(v.variant || '—')}</span>`
+      + `<span class="mk-pd-variant-price">${escapeHtml(formatMoneyEn(v.price) || '—')}</span>`
+      + `</div>`
+    ))
     .join('');
   return (
-    `<section class="mk-pd-section"><div class="mk-pd-title">ভ্যারিয়েন্ট ও দাম</div>`
-    + `<table class="mk-pd-variants"><tbody>${rows}</tbody></table></section>`
+    `<section class="mk-pd-section"><div class="mk-pd-title">Variants</div>`
+    + `<div class="mk-pd-variantwrap">${pills}</div></section>`
   );
 }
 
@@ -495,17 +555,17 @@ async function generatePhonePages(phoneList, brandLinksHtml) {
     }
 
     const priceDisplay = phone.variants.length > 1
-      ? `${formatMoney(phone.price)} থেকে শুরু`
-      : (formatMoney(phone.price) || 'দাম জানা নেই');
+      ? `Starting from ${formatMoneyEn(phone.price)}`
+      : (formatMoneyEn(phone.price) || 'Price unavailable');
 
     const pageContent = render(phoneTemplate, {
       phone_name: escapeHtml(phone.name),
-      phone_brand_name: escapeHtml(phone.brandName || 'অজানা'),
+      phone_brand_name: escapeHtml(phone.brandName || 'Unknown'),
       phone_brand_slug: phone.brandSlug || '',
       phone_status_class: statusClass(phone.status),
       phone_status_label: statusLabel(phone.status),
       phone_price_display: escapeHtml(priceDisplay),
-      phone_released_bn: formatDateBn(phone.released) || 'জানা নেই',
+      phone_released_bn: formatDateEn(phone.released) || 'TBA',
       phone_image: escapeAttr(phone.image),
       phone_summary: escapeHtml(phone.summary),
       gallery_thumbs_block: buildGalleryThumbs(phone.gallery, phone.image),
@@ -513,14 +573,14 @@ async function generatePhonePages(phoneList, brandLinksHtml) {
       rating_block: buildRatingBlock(phone.rating),
       proscons_block: buildProsConsBlock(phone.extra_pros, phone.extra_cons),
       variants_block: buildVariantsBlock(phone.variants),
-      spec_sections: buildSpecSections(phone.specs) || '<p style="color:#9ca3af;font-size:0.9rem;">স্পেসিফিকেশন এখনো যোগ করা হয়নি।</p>',
+      spec_sections: buildSpecSections(phone.specs) || '<p style="color:#9ca3af;font-size:0.9rem;">Specifications not added yet.</p>',
     });
 
-    const summaryForMeta = (phone.summary || `${phone.name} - দাম, স্পেসিফিকেশন ও রিভিউ`).slice(0, 155);
+    const summaryForMeta = (phone.summary || `${phone.name} - Price, Specifications & Review`).slice(0, 155);
 
     const fullPage = render(layout, {
       page_title: phone.name,
-      full_title: escapeAttr(`${phone.name} দাম ও স্পেসিফিকেশন - Mobile Khujo`),
+      full_title: escapeAttr(`${phone.name} Price & Full Specifications - Mobile Khujo`),
       page_description: escapeAttr(summaryForMeta),
       page_image: phone.image || DEFAULT_OG_IMAGE,
       page_url: `${SITE_URL}/phone/${phone.slug}.html`,
