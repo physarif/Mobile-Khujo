@@ -1,0 +1,2971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mobile Khujo — Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #fafaf9; --surface: #ffffff; --border: #ebebeb; --border2: #e0e0e0;
+      --accent: #5D91E4; --accent-soft: #e8f0fc; --text: #1a1a1a; --muted: #9a9a9a;
+      --muted2: #c4c4c4; --success: #3a9e6e; --success-soft: #edf7f2;
+      --error: #d94f4f; --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117; --surface: #161b22; --border: #30363d; --border2: #3d444d;
+        --accent: #5D91E4; --accent-soft: #1a2d45; --text: #e6edf3; --muted: #7d8590;
+        --muted2: #3d444d; --success: #3fb950; --success-soft: #0d2119;
+        --error: #f85149; --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3);
+      }
+      .action-btn.primary { background: #e6edf3 !important; color: #0d1117 !important; }
+      .action-btn.primary:hover { background: #cdd9e5 !important; }
+      .upload-all-btn:disabled, .upload-btn:disabled { background: #21262d; color: #484f58; }
+      .sk-box { background: linear-gradient(90deg,#222220 25%,#2a2a28 50%,#222220 75%); background-size:200% 100%; }
+      #bottomTabBar { background: #1c2128; border-color: #444c56; box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04); }
+      @media (min-width: 768px) {
+        #bottomTabBar { box-shadow: 2px 0 20px rgba(0,0,0,0.4); border-right-color: #30363d; }
+      }
+    }
+ 
+    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; -webkit-user-select:none; user-select:none; }
+    input, textarea, select, .fi-name-input { -webkit-user-select:text; user-select:text; }
+
+    @keyframes fadeDown { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeUp   { from{opacity:0;transform:translateY(12px)}  to{opacity:1;transform:translateY(0)} }
+    @keyframes spin     { to{transform:rotate(360deg)} }
+    @keyframes shimmer  { to{background-position:-200% 0} }
+ 
+    /* ── BOTTOM TAB BAR (mobile) ── */
+    #bottomTabBar {
+      position: fixed; bottom: 12px; left: 28px; right: 28px; z-index: 200;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      display: flex; align-items: stretch;
+      height: 58px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    .tab-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; border: none; background: transparent; padding: 0;
+      position: relative; -webkit-tap-highlight-color: transparent;
+      color: var(--muted2);
+      transition: color 0.18s ease, transform 0.18s ease;
+    }
+    .tab-item i {
+      font-size: 1.2rem; line-height: 1;
+      transition: transform 0.18s ease;
+      position: relative; z-index: 1;
+    }
+    .tab-item.active { color: var(--accent); }
+    .tab-item.active i { transform: scale(1.15); }
+    .tab-item:active i { transform: scale(0.88); }
+    .tab-item.active::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 52px; height: 32px;
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      border-radius: 16px;
+      transition: opacity 0.18s ease;
+    }
+    .tab-item[data-section="phones"] { order: 1; }
+    .tab-item[data-section="media"]  { order: 2; }
+    .tab-item[data-section="brands"] { order: 3; }
+
+    /* ── DESKTOP SIDEBAR ── */
+    @media (min-width: 768px) {
+      #bottomTabBar {
+        position: fixed;
+        top: 0; left: 0; bottom: 0; right: auto;
+        width: 220px;
+        height: 100vh;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        border-radius: 0;
+        border: none;
+        border-right: 1px solid var(--border);
+        box-shadow: 2px 0 20px rgba(0,0,0,0.06);
+        padding: 0;
+        margin-bottom: 0;
+        overflow: hidden;
+      }
+      #sidebar-brand {
+        display: flex !important;
+        flex-direction: column;
+      }
+      #sidebar-footer {
+        display: block !important;
+        margin-top: auto;
+        flex-shrink: 0;
+      }
+    #sidebar-brand { display: none; }
+    #sidebar-footer { display: none; }
+      .tab-item {
+        flex: none;
+        flex-direction: row;
+        order: 0;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 0.72rem;
+        height: 44px;
+        padding: 0 1rem;
+        border-radius: 10px;
+        margin: 2px 0.6rem;
+        color: var(--muted);
+        font-size: 0.83rem;
+        font-weight: 500;
+        transition: background 0.15s, color 0.15s;
+      }
+      .tab-item i {
+        font-size: 0.95rem;
+        width: 18px;
+        text-align: center;
+        flex-shrink: 0;
+        transition: transform 0.15s;
+      }
+      .tab-item::after {
+        content: attr(title);
+        font-size: 0.83rem;
+        font-weight: 500;
+        font-family: 'Inter', sans-serif;
+      }
+      .tab-item.active {
+        color: var(--accent);
+        background: var(--accent-soft);
+      }
+      .tab-item.active i { transform: none; }
+      .tab-item:active i { transform: scale(0.9); }
+      .tab-item:hover:not(.active) { background: var(--border); color: var(--text); }
+      .tab-item.active::before { display: none; }
+
+      .section-page { margin-left: 220px; }
+      .section-inner { padding-bottom: 3rem; }
+    }
+    @media (prefers-color-scheme: dark) and (min-width: 768px) {
+      #bottomTabBar { box-shadow: 2px 0 20px rgba(0,0,0,0.35); }
+      .tab-item:hover:not(.active) { background: var(--border2); color: var(--text); }
+    }
+    #sidebar-brand { display: none; }
+    #sidebar-footer { display: none; }
+
+    /* ── DASHBOARD old styles not needed ── */
+    .container { width:100%; max-width:680px; margin:0 auto; }
+    header { text-align:center; margin-bottom:2.5rem; animation:fadeDown 0.5s ease both; }
+    header h1 { font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:400; letter-spacing:-0.02em; margin-bottom:0.35rem; }
+    header p { font-size:0.85rem; color:var(--muted); font-weight:300; }
+    .divider { width:36px; height:1px; background:var(--border2); margin:1.1rem auto 0; }
+    /* ── Android Files style ── */
+    .fm-appbar {
+      position: sticky; top: 0; z-index: 50;
+      background: #16213e;
+      padding: 0 1.1rem;
+      height: 58px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    }
+    .fm-appbar-left { display: flex; flex-direction: column; justify-content: center; }
+    .fm-appbar-title { font-size: 1.1rem; font-weight: 600; color: #fff; letter-spacing: 0.01em; line-height: 1.2; }
+    .fm-appbar-sub { font-size: 0.62rem; color: rgba(255,255,255,0.45); letter-spacing: 0.06em; text-transform: uppercase; }
+    .fm-appbar-right { display: flex; align-items: center; gap: 0.5rem; }
+    .fm-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4caf50; box-shadow: 0 0 8px #4caf5099; }
+    .fm-status-text { font-size: 0.65rem; color: rgba(255,255,255,0.5); letter-spacing: 0.03em; }
+
+    .fm-infostrip {
+      background: var(--bg);
+      padding: 0.5rem 1.1rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .fm-infostrip-left { font-size: 0.72rem; color: var(--muted); }
+    .fm-infostrip-left strong { color: var(--text); font-weight: 600; }
+    .fm-infostrip-right { font-size: 0.7rem; color: var(--muted); }
+
+    .fm-list-label {
+      font-size: 0.68rem; font-weight: 700; color: var(--muted);
+      letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 0.9rem 1.1rem 0.4rem;
+      background: var(--bg);
+    }
+
+    .fm-list { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    .folder-card {
+      cursor: pointer; display: flex; align-items: center;
+      padding: 0 1.1rem; height: 62px;
+      border-bottom: 1px solid var(--border);
+      position: relative; overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.08s;
+    }
+    .folder-card:last-child { border-bottom: none; }
+    .folder-card:active { background: var(--border); }
+    @media (hover: hover) { .folder-card:hover { background: var(--accent-soft); } }
+
+    .ripple-wrap { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .ripple { position: absolute; border-radius: 50%; background: rgba(79,110,247,0.18); transform: scale(0); animation: ripple-out 0.55s ease-out forwards; }
+    @keyframes ripple-out { to { transform: scale(6); opacity: 0; } }
+
+    .folder-icon {
+      width: 44px; height: 44px; border-radius: 13px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.35rem; flex-shrink: 0; margin-right: 0.85rem;
+    }
+    .folder-icon svg { width: 22px; height: 22px; display: block; }
+    .fi-tv { background:#e8eafe; color:#3f51b5; }
+    .fi-wc { background:#fff3e0; color:#f57c00; }
+    .fi-vi { background:#fce4ec; color:#e91e63; }
+    .fi-st { background:#e8f5e9; color:#388e3c; }
+    .fi-ep { background:#f3e5f5; color:#7b1fa2; }
+    .fi-pc { background:#e0f7fa; color:#0097a7; }
+    .fi-md { background:#fff8e1; color:#f9a825; }
+    @media (prefers-color-scheme: dark) {
+      .fi-tv { background:#1a2d45; color:#5D91E4; }
+      .fi-wc { background:#2d1b00; color:#e3b341; }
+      .fi-vi { background:#2d1319; color:#f85149; }
+      .fi-st { background:#0d2119; color:#3fb950; }
+      .fi-ep { background:#271b35; color:#a371f7; }
+      .fi-pc { background:#0c2333; color:#39c5cf; }
+      .fi-md { background:#272115; color:#e3b341; }
+    }
+
+    .folder-info { flex: 1; min-width: 0; }
+    .folder-name { font-size: 0.88rem; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .folder-desc { font-size: 0.7rem; color: var(--muted); margin-top: 0.08rem; }
+
+    .folder-right { display: flex; align-items: center; gap: 0.45rem; flex-shrink: 0; }
+    .fm-count { font-size: 0.82rem; font-weight: 600; color: var(--muted); min-width: 2ch; text-align: right; font-variant-numeric: tabular-nums; transition: color 0.2s; }
+    .fm-count.loaded { color: var(--accent); }
+    .folder-arrow svg { width: 15px; height: 15px; stroke: var(--muted2); fill: none; stroke-width: 2.5; stroke-linecap: round; }
+    .folder-card:hover .folder-arrow svg, .folder-card:active .folder-arrow svg { stroke: var(--accent); }
+
+    .fm-summary {
+      padding: 0.85rem 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.35rem; background: var(--bg);
+    }
+    .fm-summary-text { font-size: 0.7rem; color: var(--muted2); }
+
+    /* ── SECTION PAGES ── */
+    .section-page { display:none; min-height:100vh; }
+    .section-inner { padding: 0 1rem 8rem; max-width:680px; margin:0 auto; }
+
+    /* ── TOP BAR (section title) ── */
+    .back-bar {
+      position:sticky; top:0; z-index:100;
+      background:var(--bg); border-bottom:1px solid var(--border);
+      padding:0 1rem; height:50px; display:flex; align-items:center; gap:0.6rem;
+    }
+    .back-btn { display:none; }
+    .back-title { font-size:0.95rem; color:var(--text); font-weight:600; font-family:'Playfair Display',serif; letter-spacing:-0.01em; }
+    @media (min-width: 768px) {
+      .back-bar { padding: 0 1.5rem; }
+    }
+
+
+
+
+
+    /* ── SHARED COMPONENT STYLES ── */
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:1.75rem; box-shadow:var(--shadow); margin-bottom:1.75rem; animation:fadeUp 0.5s ease 0.1s both; }
+    .card-title { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:400; margin-bottom:1.25rem; }
+    .field { margin-bottom:0.85rem; }
+    .field label { display:block; font-size:0.72rem; color:var(--muted); font-weight:500; margin-bottom:0.28rem; text-transform:uppercase; letter-spacing:0.05em; }
+    .field input, .field textarea, .field select { width:100%; padding:0.58rem 0.75rem; border:1px solid var(--border); border-radius:8px; font-size:0.83rem; font-family:'Inter',sans-serif; color:var(--text); background:var(--bg); outline:none; transition:border-color 0.2s; }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color:var(--accent); }
+    .field textarea { resize:vertical; min-height:70px; }
+    .field-row { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+    .spec-group-title { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--accent); margin:1.1rem 0 0.55rem; padding-top:0.7rem; border-top:1px dashed var(--border); }
+
+    .field select { cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239a9a9a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 0.75rem center; padding-right:2rem; }
+    .action-btn { padding:0.72rem 1.1rem; border-radius:9px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-size:0.82rem; font-weight:500; cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.15s; display:inline-flex; align-items:center; gap:0.4rem; }
+    .action-btn:hover { border-color:var(--accent); color:var(--accent); }
+    .action-btn.primary { background:var(--text); color:#fff; border-color:var(--text); }
+    .action-btn.primary:hover { opacity:0.85; }
+    .action-btn:disabled { opacity:0.45; cursor:not-allowed; }
+    .btn-row { display:flex; gap:0.5rem; margin-top:1rem; justify-content:flex-end; }
+    .lib-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+    .lib-title { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:400; }
+    .lib-right { display:flex; align-items:center; gap:0.45rem; }
+    .lib-count { font-size:0.72rem; color:var(--muted); background:var(--surface); border:1px solid var(--border); padding:0.18rem 0.55rem; border-radius:999px; }
+    .refresh-btn { display:flex; align-items:center; gap:0.3rem; padding:0.28rem 0.6rem; background:var(--surface); border:1px solid var(--border); border-radius:7px; font-size:0.72rem; cursor:pointer; font-family:'Inter',sans-serif; color:var(--muted); transition:all 0.15s; }
+    .refresh-btn:hover { border-color:var(--accent); color:var(--accent); }
+    .refresh-btn svg { width:11px; height:11px; stroke:currentColor; fill:none; stroke-width:2; }
+    .refresh-btn.loading svg { animation:spin 0.7s linear infinite; }
+    .refresh-btn.loading i { animation:spin 0.7s linear infinite; display:inline-block; }
+    .search-wrap { margin-bottom:1rem; }
+    .search-row { display:flex; align-items:center; gap:0.5rem; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:0.45rem 0.75rem; transition:border-color 0.2s; }
+    .search-row:focus-within { border-color:var(--accent); }
+    .search-row svg { width:13px; height:13px; stroke:var(--muted2); fill:none; stroke-width:2; flex-shrink:0; }
+    .search-row input { flex:1; border:none; background:transparent; outline:none; font-size:0.82rem; font-family:'Inter',sans-serif; color:var(--text); }
+    .search-row input::placeholder { color:var(--muted2); }
+    .lib-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:0.25rem 0; box-shadow:var(--shadow); overflow:hidden; }
+    .empty-state { text-align:center; padding:2.5rem 1rem; color:var(--muted); font-size:0.82rem; }
+    .empty-state .empty-icon { font-size:2rem; margin-bottom:0.5rem; }
+    .toast { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%) translateY(10px); background:var(--text); color:var(--surface); font-size:0.78rem; font-weight:500; padding:0.55rem 1.1rem; border-radius:999px; box-shadow:0 4px 16px rgba(0,0,0,0.18); opacity:0; pointer-events:none; transition:opacity 0.2s,transform 0.2s; z-index:9999; white-space:nowrap; }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    .toast.success { background:var(--success); }
+    .toast.error-t { background:var(--error); }
+    .sk-item { display:flex; align-items:center; gap:0.9rem; padding:0.9rem 1.5rem; border-bottom:1px solid var(--border); }
+    .sk-item:last-child { border-bottom:none; }
+    .sk-box { border-radius:6px; background:linear-gradient(90deg,#f0f0ef 25%,#f8f8f7 50%,#f0f0ef 75%); background-size:200% 100%; animation:shimmer 1.2s infinite; }
+    .sk-thumb { width:38px; height:38px; border-radius:9px; flex-shrink:0; }
+    .sk-lines { flex:1; display:flex; flex-direction:column; gap:0.4rem; }
+    .sk-line { height:10px; }
+    .sk-line.w70 { width:70%; }
+    .sk-line.w45 { width:45%; }
+
+    /* ── LIST ITEMS (shared across channel/station/episode/etc) ── */
+    .channel-list, .item-list, .station-list, .category-list { display:flex; flex-direction:column; padding:0 1.5rem; }
+    .channel-item, .list-item, .station-item { display:flex; align-items:center; gap:0.9rem; padding:0.9rem 0; border-bottom:1px solid var(--border); animation:fadeUp 0.3s ease both; }
+    .channel-item:last-child, .list-item:last-child, .station-item:last-child { border-bottom:none; }
+    .ci-thumb, .li-thumb, .si-thumb { width:38px; height:38px; flex-shrink:0; border-radius:9px; border:1px solid var(--border); background:var(--bg); object-fit:cover; display:block; }
+    .ci-thumb-placeholder, .li-thumb-placeholder, .si-thumb-placeholder { width:38px; height:38px; flex-shrink:0; border-radius:9px; border:1px solid var(--border); background:var(--bg); display:flex; align-items:center; justify-content:center; font-size:1.1rem; }
+    .ci-info, .li-info, .si-info { flex:1; min-width:0; }
+    .ci-name, .li-name, .si-name { font-size:0.83rem; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:0.1rem; }
+    .ci-meta, .li-meta, .si-meta { font-size:0.7rem; color:var(--muted); display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; }
+    .ci-id, .li-id, .si-id { font-size:0.68rem; color:var(--accent); font-weight:600; }
+    .li-cat { font-size:0.68rem; background:var(--accent-soft); color:var(--accent); border-radius:4px; padding:0.1rem 0.4rem; }
+    .li-featured { font-size:0.63rem; font-weight:600; background:#fff4d6; color:#b07800; border-radius:4px; padding:0.1rem 0.4rem; }
+    @media (prefers-color-scheme:dark) { .li-featured { background:#2e2200; color:#f5c542; } }
+    .ci-actions, .li-actions, .si-actions { display:flex; gap:0.3rem; flex-shrink:0; }
+    .ci-btn, .si-btn { padding:0.22rem 0.55rem; font-size:0.7rem; font-weight:500; border-radius:5px; cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.15s; border:1px solid var(--border); background:var(--surface); color:var(--muted); }
+    .ci-btn.edit:hover, .si-btn.edit:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
+    .ci-btn.del:hover, .si-btn.del:hover { border-color:var(--error); color:var(--error); }
+
+    /* ── TOGGLE ── */
+    .toggle-field { display:flex; align-items:center; justify-content:space-between; padding:0.62rem 0.75rem; border:1px solid var(--border); border-radius:8px; background:var(--bg); margin-bottom:0.85rem; }
+    .toggle-label { font-size:0.83rem; color:var(--text); display:flex; align-items:center; gap:0.45rem; }
+    .toggle-switch { position:relative; width:38px; height:22px; flex-shrink:0; }
+    .toggle-switch input { opacity:0; width:0; height:0; position:absolute; }
+    .toggle-track { position:absolute; inset:0; border-radius:999px; background:var(--border2); cursor:pointer; transition:background 0.2s; }
+    .toggle-track::after { content:""; position:absolute; width:16px; height:16px; border-radius:50%; background:#fff; top:3px; left:3px; transition:transform 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.2); }
+    .toggle-switch input:checked + .toggle-track { background:var(--accent); }
+    .toggle-switch input:checked + .toggle-track::after { transform:translateX(16px); }
+
+    /* ── FILTER TABS ── */
+    .filter-tabs { display:flex; gap:0.3rem; margin-bottom:1rem; overflow-x:auto; padding-bottom:2px; }
+    .filter-tabs::-webkit-scrollbar { display:none; }
+    .ftab { flex-shrink:0; padding:0.28rem 0.7rem; border-radius:7px; font-size:0.75rem; font-weight:500; cursor:pointer; border:1px solid var(--border); background:var(--surface); color:var(--muted); font-family:'Inter',sans-serif; transition:all 0.15s; }
+    .ftab:hover { border-color:var(--accent); color:var(--accent); }
+    .ftab.active { background:var(--text); color:#fff; border-color:var(--text); }
+
+    /* ── MEDIA / UPLOAD ── */
+    .file-input-row { display:flex; align-items:center; gap:0.65rem; padding:0.6rem 0.75rem; border:1px solid var(--border); border-radius:10px; background:var(--bg); transition:border-color 0.2s; }
+    .file-input-row:hover { border-color:var(--accent); }
+    .file-input-row svg { width:15px; height:15px; stroke:var(--muted); fill:none; stroke-width:1.8; flex-shrink:0; }
+    .file-input-label { flex:1; font-size:0.82rem; color:var(--muted); cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+    .file-input-btn { flex-shrink:0; padding:0.22rem 0.65rem; background:var(--surface); border:1px solid var(--border); border-radius:6px; font-size:0.75rem; font-weight:500; color:var(--text); cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.15s; position:relative; overflow:hidden; }
+    .file-input-btn:hover { border-color:var(--accent); color:var(--accent); }
+    .file-input-btn input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+    .queue-list { display:flex; flex-direction:column; gap:0.55rem; margin-top:1rem; }
+    .queue-item { display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0.75rem; background:var(--bg); border:1px solid var(--border); border-radius:10px; transition:border-color 0.2s; }
+    .queue-item.uploading { border-color:var(--accent); }
+    .queue-item.done { border-color:var(--success); }
+    .queue-item.error { border-color:var(--error); }
+    .qi-emoji { font-size:1.1rem; flex-shrink:0; width:28px; text-align:center; }
+    .qi-info { flex:1; min-width:0; }
+    .qi-name { font-size:0.8rem; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:0.18rem; }
+    .qi-name-input { font-size:0.8rem; font-weight:500; font-family:'Inter',sans-serif; border:none; border-bottom:1.5px solid var(--accent); outline:none; background:transparent; color:var(--text); width:100%; padding:0; margin-bottom:0.18rem; -webkit-user-select:text; user-select:text; }
+    .qi-bar-wrap { height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
+    .qi-bar { height:100%; background:var(--accent); border-radius:2px; width:0%; transition:width 0.2s; }
+    .qi-bar.done { background:var(--success); }
+    .qi-bar.error { background:var(--error); }
+    .qi-status { font-size:0.68rem; color:var(--muted); margin-top:0.15rem; }
+    .qi-remove { background:none; border:none; color:var(--muted2); cursor:pointer; font-size:0.9rem; padding:0.1rem 0.2rem; flex-shrink:0; transition:color 0.15s; line-height:1; }
+    .qi-remove:hover { color:var(--error); }
+    .qi-copy { padding:0.18rem 0.5rem; font-size:0.68rem; font-weight:500; border-radius:4px; cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.15s; border:1px solid var(--success); background:var(--success-soft); color:var(--success); display:none; }
+    .qi-copy.show { display:inline-block; }
+    .qi-copy.copied { background:var(--success); color:#fff; }
+    .upload-all-btn { width:100%; margin-top:1rem; padding:0.82rem; background:var(--accent); color:#fff; border:none; border-radius:10px; font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:500; cursor:pointer; transition:opacity 0.15s; display:flex; align-items:center; justify-content:center; gap:0.45rem; }
+    .upload-all-btn:hover { opacity:0.85; }
+    .upload-all-btn:disabled { opacity:0.4; cursor:not-allowed; }
+    .queue-summary { font-size:0.75rem; color:var(--muted); margin-top:0.6rem; text-align:center; }
+    .error-msg { display:none; margin-top:0.9rem; font-size:0.78rem; color:var(--error); text-align:center; }
+    .file-list { display:flex; flex-direction:column; padding:0 1.5rem; }
+    .file-item { display:flex; align-items:center; gap:0.9rem; padding:0.8rem 0; border-bottom:1px solid var(--border); animation:fadeUp 0.3s ease both; }
+    .file-item:last-child { border-bottom:none; }
+    .fi-icon { width:34px; height:34px; flex-shrink:0; border-radius:8px; border:1px solid var(--border); background:var(--bg); display:flex; align-items:center; justify-content:center; font-size:0.95rem; cursor:pointer; transition:all 0.15s; }
+    .fi-icon.delete-mode { background:#fdecea; border-color:#f5c2c2; }
+    .fi-icon.delete-mode svg { width:15px; height:15px; stroke:var(--error); fill:none; stroke-width:2; }
+    .fi-info { flex:1; min-width:0; }
+    .fi-name { font-size:0.82rem; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:0.12rem; cursor:pointer; }
+    .fi-name:hover { color:var(--accent); }
+    .fi-name-input { font-size:0.82rem; font-weight:500; font-family:'Inter',sans-serif; border:none; border-bottom:1.5px solid var(--accent); outline:none; background:transparent; color:var(--text); width:100%; padding:0; }
+    .fi-meta { font-size:0.7rem; color:var(--muted); }
+    .fi-actions { display:flex; gap:0.3rem; flex-shrink:0; }
+    .fi-copy, .fi-open { padding:0.22rem 0.55rem; font-size:0.7rem; font-weight:500; border-radius:5px; cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.15s; text-decoration:none; display:flex; align-items:center; border:1px solid var(--border); background:var(--surface); color:var(--muted); }
+    .fi-copy:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
+    .fi-open:hover { background:var(--text); color:#fff; border-color:var(--text); }
+    .fi-copy.copied { border-color:var(--success); color:var(--success); background:var(--success-soft); }
+    .fi-thumb-wrap { width:34px; height:34px; flex-shrink:0; border-radius:8px; border:1px solid var(--border); position:relative; cursor:pointer; overflow:hidden; }
+    .fi-thumb { width:100%; height:100%; border-radius:8px; object-fit:cover; display:block; transition:filter 0.15s; }
+    .fi-thumb-wrap.delete-mode .fi-thumb { filter:brightness(0.3); }
+    .fi-thumb-wrap .fi-del-overlay { display:none; position:absolute; inset:0; align-items:center; justify-content:center; }
+    .fi-thumb-wrap.delete-mode .fi-del-overlay { display:flex; }
+    .fi-thumb-wrap .fi-del-overlay svg { width:15px; height:15px; stroke:var(--error); fill:none; stroke-width:2; }
+    .lib-empty { text-align:center; padding:2.5rem 1rem; color:var(--muted); font-size:0.82rem; }
+    .lib-empty span { display:block; font-size:1.75rem; margin-bottom:0.6rem; }
+    .sk-sq { width:34px; height:34px; flex-shrink:0; border-radius:8px; }
+    .sk-l { height:9px; margin-bottom:0.4rem; }
+    .sk-l.s { width:38%; }
+    .search-wrap { padding:0.75rem 1.5rem; border-bottom:1px solid var(--border); }
+    .search-wrap .search-row { background:var(--bg); }
+    .search-input-row { display:flex; align-items:center; gap:0.5rem; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:0.45rem 0.75rem; transition:border-color 0.2s; width:100%; }
+    .search-input-row:focus-within { border-color:var(--accent); }
+    .search-input-row svg { width:13px; height:13px; stroke:var(--muted2); fill:none; stroke-width:2; flex-shrink:0; order:2; }
+    .search-input-row input { flex:1; border:none; background:transparent; outline:none; font-size:0.82rem; font-family:'Inter',sans-serif; color:var(--text); order:1; }
+    .search-input-row input::placeholder { color:var(--muted2); }
+    .search-clear { display:none !important; }
+
+    /* cat badge */
+    .cat-badge { display:inline-block; font-size:0.68rem; background:var(--accent-soft); color:var(--accent); border-radius:4px; padding:0.1rem 0.4rem; margin-left:0.3rem; }
+
+    /* section header override — no top padding on first header inside section */
+    .section-inner header { margin-top:1rem; }
+
+    /* footer */
+    .page-footer { text-align:center; margin-top:2.5rem; }
+    .page-footer span:first-child { font-family:'Playfair Display',serif; font-size:0.85rem; font-weight:500; color:var(--text); letter-spacing:0.02em; }
+    .page-footer span:last-child { font-size:0.75rem; color:var(--muted); font-weight:300; }
+  </style>
+</head>
+<body>
+
+<div id="loadingScreen" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;">
+  <div style="text-align:center;">
+    <div style="width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 1rem;"></div>
+    <div style="font-size:0.78rem;color:var(--muted);">Loading...</div>
+  </div>
+</div>
+
+<div id="loginScreen" style="display:none;position:fixed;inset:0;z-index:9998;background:var(--bg);display:none;align-items:center;justify-content:center;padding:1.5rem;">
+  <div style="width:100%;max-width:360px;animation:fadeUp 0.4s ease both;">
+    <div style="text-align:center;margin-bottom:2rem;">
+      <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:400;letter-spacing:-0.02em;margin-bottom:0.3rem;">Mobile Khujo</div>
+      <div style="font-size:0.75rem;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;">Admin Dashboard</div>
+      <div style="width:32px;height:1px;background:var(--border2);margin:1rem auto 0;"></div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1.75rem;box-shadow:var(--shadow);">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="your@email.com" autocomplete="email" value="phys.arif@gmail.com" readonly style="opacity:0.6;cursor:default;"/>
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password"/>
+      </div>
+
+      <div id="login-error" style="display:none;margin-top:0.75rem;font-size:0.78rem;color:var(--error);text-align:center;"></div>
+
+      <button id="login-btn" onclick="doLogin()" style="width:100%;margin-top:1.25rem;padding:0.82rem;background:var(--text);color:#fff;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:0.85rem;font-weight:500;cursor:pointer;transition:opacity 0.15s;display:flex;align-items:center;justify-content:center;gap:0.5rem;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Sign In
+      </button>
+    </div>
+  </div>
+</div>
+
+<nav id="bottomTabBar" style="display:none;">
+  <div id="sidebar-brand" style="padding:1.5rem 1.2rem 1rem; border-bottom:1px solid var(--border); margin-bottom:0.4rem; flex-shrink:0;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:500;color:var(--text);letter-spacing:-0.01em;line-height:1.2;">Mobile Khujo</div>
+  </div>
+  <button class="tab-item active" data-section="media" onclick="openSection('media')" title="Media">
+    <i class="fa-solid fa-upload"></i>
+  </button>
+  <button class="tab-item" data-section="phones" onclick="openSection('phones')" title="Phones">
+    <i class="fa-solid fa-mobile-screen"></i>
+  </button>
+  <button class="tab-item" data-section="brands" onclick="openSection('brands')" title="Brand">
+    <i class="fa-solid fa-layer-group"></i>
+  </button>
+  <div id="sidebar-footer" style="padding:0.9rem 1.2rem; border-top:1px solid var(--border); margin-top:auto;">
+    <div style="font-size:0.62rem;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;">Admin Dashboard</div>
+  </div>
+</nav>
+
+<!-- Watch Categories section is now embedded inside Watch tab (above) -->
+
+<div id="section-phones" class="section-page" style="display:none;">
+  <div class="section-inner">
+    <header>
+      <h1>Manage Phones</h1>
+      <p>Add, View &amp; Manage Phones</p>
+      <div class="divider"></div>
+    </header>
+
+
+
+    <!-- ══ PANEL: Phones ══ -->
+    <div id="ph-panel-phones">
+      <!-- Add Phone -->
+      <div class="card" id="ph-addCard">
+        <div class="card-title" id="ph-formTitle">Add New Phone</div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>UID <span style="font-weight:300;text-transform:none;letter-spacing:0;">(6 digit, used as key)</span></label>
+            <input type="text" id="ph-fUid" placeholder="e.g. a1b2c3" readonly style="font-family:monospace;font-size:0.82rem;background:var(--bg);color:var(--muted);"/>
+          </div>
+          <div class="field">
+            <label>ID <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional, numeric)</span></label>
+            <input type="number" id="ph-fId" placeholder="e.g. 101" min="1" step="1"/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Name</label>
+          <input type="text" id="ph-fName" placeholder="e.g. Honor X6e" oninput="PH_onNameInput(this.value)"/>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Slug</label>
+            <input type="text" id="ph-fSlug" placeholder="e.g. honor-x6e"/>
+          </div>
+          <div class="field">
+            <label>Brand</label>
+            <select id="ph-fBrand"><option value="">Loading...</option></select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Price (৳)</label>
+            <input type="number" id="ph-fPrice" placeholder="e.g. 22000" min="0" step="1"/>
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select id="ph-fStatus">
+              <option value="official">Official</option>
+              <option value="unofficial">Unofficial</option>
+              <option value="upcoming">Upcoming</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Released</label>
+          <input type="date" id="ph-fReleased"/>
+        </div>
+
+        <div class="field">
+          <label>Cover Image URL</label>
+          <input type="text" id="ph-fImg" placeholder="https://..." oninput="(function(v){var p=document.getElementById('ph-imgPreview'),t=document.getElementById('ph-imgThumb');if(v){t.src=v;p.style.display='block';}else{p.style.display='none';}})(this.value)"/>
+          <div id="ph-imgPreview" style="margin-top:0.5rem;display:none;">
+            <img id="ph-imgThumb" src="" style="height:64px;border-radius:8px;border:1px solid var(--border);object-fit:cover;"/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Gallery <span style="font-weight:300;text-transform:none;letter-spacing:0;">(one URL per line)</span></label>
+          <textarea id="ph-fGallery" placeholder="https://.../img1.webp&#10;https://.../img2.webp" rows="3"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Summary</label>
+          <textarea id="ph-fSummary" placeholder="সংক্ষিপ্ত রিভিউ..." rows="3"></textarea>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Extra Pros <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional, one per line)</span></label>
+            <textarea id="ph-fExtraPros" placeholder="৩ বছর অফিসিয়াল ওয়ারেন্টি" rows="3"></textarea>
+          </div>
+          <div class="field">
+            <label>Extra Cons <span style="font-weight:300;text-transform:none;letter-spacing:0;">(optional, one per line)</span></label>
+            <textarea id="ph-fExtraCons" placeholder="শোরুমে স্টক কম" rows="3"></textarea>
+          </div>
+        </div>
+
+        <div class="card-title" style="margin-top:1.4rem;">Specifications</div>
+        <div class="spec-group-title">Network</div>
+        <div class="field-row">
+          <div class="field">
+            <label>2G Bands</label>
+            <input type="text" id="ph-fSpec-net-bands2g" placeholder="e.g. GSM 850/900/1800/1900"/>
+          </div>
+          <div class="field">
+            <label>3G Bands</label>
+            <input type="text" id="ph-fSpec-net-bands3g" placeholder="e.g. HSDPA 850/900/2100"/>
+          </div>
+          <div class="field">
+            <label>4G Bands</label>
+            <input type="text" id="ph-fSpec-net-bands4g" placeholder="e.g. LTE band 1,3,5,8,40"/>
+          </div>
+          <div class="field">
+            <label>5G Bands</label>
+            <input type="text" id="ph-fSpec-net-bands5g" placeholder="e.g. SA/NSA - n1,n3,n5,n78"/>
+          </div>
+        </div>
+        <div class="spec-group-title">Body</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Dimensions</label>
+            <input type="text" id="ph-fSpec-body-dimensions" placeholder="e.g. 162.9 x 74.7 x 7.8 mm"/>
+          </div>
+          <div class="field">
+            <label>Weight (g)</label>
+            <input type="number" id="ph-fSpec-body-weight_g" placeholder="e.g. 188"/>
+          </div>
+          <div class="field">
+            <label>Build</label>
+            <input type="text" id="ph-fSpec-body-build" placeholder="e.g. Glass front, plastic back"/>
+          </div>
+          <div class="field">
+            <label>SIM</label>
+            <input type="text" id="ph-fSpec-body-sim" placeholder="e.g. Dual SIM (Nano-SIM)"/>
+          </div>
+          <div class="field">
+            <label>Protection</label>
+            <input type="text" id="ph-fSpec-body-protection" placeholder="e.g. IP54 dust/splash resistant"/>
+          </div>
+        </div>
+        <div class="spec-group-title">Display</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Type</label>
+            <input type="text" id="ph-fSpec-display-type" placeholder="e.g. IPS LCD"/>
+          </div>
+          <div class="field">
+            <label>Size (inch)</label>
+            <input type="number" step="0.1" id="ph-fSpec-display-size_inch" placeholder="e.g. 6.7"/>
+          </div>
+          <div class="field">
+            <label>Resolution</label>
+            <input type="text" id="ph-fSpec-display-resolution" placeholder="e.g. 1080 x 2400 pixels"/>
+          </div>
+          <div class="field">
+            <label>Refresh Rate (Hz)</label>
+            <input type="number" id="ph-fSpec-display-refresh_hz" placeholder="e.g. 90"/>
+          </div>
+          <div class="field">
+            <label>Brightness (nits)</label>
+            <input type="number" id="ph-fSpec-display-brightness_nits" placeholder="e.g. 600"/>
+          </div>
+        </div>
+        <div class="spec-group-title">Platform</div>
+        <div class="field-row">
+          <div class="field">
+            <label>OS</label>
+            <input type="text" id="ph-fSpec-platform-os" placeholder="e.g. Android 14"/>
+          </div>
+          <div class="field">
+            <label>Chipset</label>
+            <input type="text" id="ph-fSpec-platform-chipset" placeholder="e.g. MediaTek Helio G81 Ultimate"/>
+          </div>
+          <div class="field">
+            <label>CPU</label>
+            <input type="text" id="ph-fSpec-platform-cpu" placeholder="e.g. Octa-core 2.0 GHz"/>
+          </div>
+          <div class="field">
+            <label>GPU</label>
+            <input type="text" id="ph-fSpec-platform-gpu" placeholder="e.g. Mali-G52 MC2"/>
+          </div>
+        </div>
+        <div class="spec-group-title">Memory</div>
+        <div class="field-row">
+          <div class="field">
+            <label>RAM (GB)</label>
+            <input type="text" id="ph-fSpec-memory-ram_gb" placeholder="e.g. 4/6/8"/>
+          </div>
+          <div class="field">
+            <label>Storage (GB)</label>
+            <input type="text" id="ph-fSpec-memory-storage_gb" placeholder="e.g. 64/128"/>
+          </div>
+          <div class="field">
+            <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;text-transform:none;letter-spacing:0;font-size:0.83rem;color:var(--text);">
+              <input type="checkbox" id="ph-fSpec-memory-card_slot" style="width:16px;height:16px;accent-color:var(--accent);"/>
+              microSD Card Slot
+            </label>
+          </div>
+          <div class="field">
+            <label>Variants</label>
+            <input type="text" id="ph-fSpec-memory-variants" placeholder="e.g. 4/64GB, 6/128GB, 8/256GB"/>
+          </div>
+        </div>
+        <div class="spec-group-title">Main Camera</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Main Camera (MP)</label>
+            <input type="text" id="ph-fSpec-maincam-main_camera_mp" placeholder="e.g. 50 MP"/>
+          </div>
+          <div class="field">
+            <label>Setup</label>
+            <input type="text" id="ph-fSpec-maincam-main_camera_setup" placeholder="e.g. 50MP Wide + 2MP Depth"/>
+          </div>
+          <div class="field">
+            <label>Features</label>
+            <input type="text" id="ph-fSpec-maincam-main_camera_features" placeholder="e.g. LED flash, HDR, panorama"/>
+          </div>
+          <div class="field">
+            <label>Video</label>
+            <input type="text" id="ph-fSpec-maincam-main_camera_video" placeholder="e.g. 1080p@30fps"/>
+          </div>
+        </div>
+        <div class="spec-group-title">Selfie Camera</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Selfie Camera (MP)</label>
+            <input type="text" id="ph-fSpec-selfiecam-selfie_camera_mp" placeholder="e.g. 8 MP"/>
+          </div>
+          <div class="field">
+            <label>Setup</label>
+            <input type="text" id="ph-fSpec-selfiecam-selfie_camera_setup" placeholder="e.g. 8MP Wide"/>
+          </div>
+          <div class="field">
+            <label>Video</label>
+            <input type="text" id="ph-fSpec-selfiecam-selfie_camera_video" placeholder="e.g. 1080p@30fps"/>
+          </div>
+        </div>
+        <div class="spec-group-title">Sound</div>
+        <div class="field-row">
+          <div class="field">
+            <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;text-transform:none;letter-spacing:0;font-size:0.83rem;color:var(--text);">
+              <input type="checkbox" id="ph-fSpec-sound-loudspeaker" style="width:16px;height:16px;accent-color:var(--accent);"/>
+              Loudspeaker
+            </label>
+          </div>
+          <div class="field">
+            <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;text-transform:none;letter-spacing:0;font-size:0.83rem;color:var(--text);">
+              <input type="checkbox" id="ph-fSpec-sound-jack_3_5mm" style="width:16px;height:16px;accent-color:var(--accent);"/>
+              3.5mm Jack
+            </label>
+          </div>
+        </div>
+        <div class="spec-group-title">Connectivity</div>
+        <div class="field-row">
+          <div class="field">
+            <label>WLAN</label>
+            <input type="text" id="ph-fSpec-conn-wlan" placeholder="e.g. Wi-Fi 802.11 b/g/n"/>
+          </div>
+          <div class="field">
+            <label>Bluetooth</label>
+            <input type="text" id="ph-fSpec-conn-bluetooth" placeholder="e.g. 5.0"/>
+          </div>
+          <div class="field">
+            <label>GPS</label>
+            <input type="text" id="ph-fSpec-conn-gps" placeholder="e.g. Yes, with A-GPS"/>
+          </div>
+          <div class="field">
+            <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;text-transform:none;letter-spacing:0;font-size:0.83rem;color:var(--text);">
+              <input type="checkbox" id="ph-fSpec-conn-nfc" style="width:16px;height:16px;accent-color:var(--accent);"/>
+              NFC
+            </label>
+          </div>
+          <div class="field">
+            <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;text-transform:none;letter-spacing:0;font-size:0.83rem;color:var(--text);">
+              <input type="checkbox" id="ph-fSpec-conn-fm_radio" style="width:16px;height:16px;accent-color:var(--accent);"/>
+              FM Radio
+            </label>
+          </div>
+          <div class="field">
+            <label>USB</label>
+            <input type="text" id="ph-fSpec-conn-usb" placeholder="e.g. USB Type-C 2.0"/>
+          </div>
+        </div>
+        <div class="spec-group-title">Features</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Sensors</label>
+            <input type="text" id="ph-fSpec-features-sensors" placeholder="e.g. Fingerprint, accelerometer, proximity"/>
+          </div>
+        </div>
+        <div class="spec-group-title">Battery</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Capacity (mAh)</label>
+            <input type="number" id="ph-fSpec-battery-capacity_mah" placeholder="e.g. 5000"/>
+          </div>
+          <div class="field">
+            <label>Charging (W)</label>
+            <input type="number" id="ph-fSpec-battery-charging_watt" placeholder="e.g. 18"/>
+          </div>
+          <div class="field">
+            <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;text-transform:none;letter-spacing:0;font-size:0.83rem;color:var(--text);">
+              <input type="checkbox" id="ph-fSpec-battery-wireless" style="width:16px;height:16px;accent-color:var(--accent);"/>
+              Wireless Charging
+            </label>
+          </div>
+          <div class="field">
+            <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;text-transform:none;letter-spacing:0;font-size:0.83rem;color:var(--text);">
+              <input type="checkbox" id="ph-fSpec-battery-reverse" style="width:16px;height:16px;accent-color:var(--accent);"/>
+              Reverse Charging
+            </label>
+          </div>
+        </div>
+
+        <div class="btn-row" style="margin-top:1rem;">
+          <button class="action-btn" id="ph-cancelBtn" onclick="PH_cancelEdit()">Cancel</button>
+          <button class="action-btn primary" id="ph-submitBtn" onclick="PH_submitPhone()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Phone
+          </button>
+        </div>
+      </div>
+
+      <!-- Phone List -->
+      <div style="animation: fadeUp 0.5s ease 0.2s both;">
+        <div class="lib-header">
+          <span class="lib-title">All Phones</span>
+          <div class="lib-right">
+            <span class="lib-count" id="ph-itemCount">0 phones</span>
+            <button class="refresh-btn" id="ph-refreshBtn" onclick="PH_loadAll()">
+              <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <div class="search-wrap">
+          <div class="search-row">
+            <input type="text" placeholder="Search phones..." id="ph-searchInput" oninput="PH_filterItems()"/>
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+        </div>
+        <div class="lib-card">
+          <div class="item-list" id="ph-itemList">
+            <div class="sk-item"><div class="sk-box sk-thumb"></div><div class="sk-lines"><div class="sk-box sk-line w70"></div><div class="sk-box sk-line w45"></div></div></div>
+            <div class="sk-item"><div class="sk-box sk-thumb"></div><div class="sk-lines"><div class="sk-box sk-line w70"></div><div class="sk-box sk-line w45"></div></div></div>
+            <div class="sk-item"><div class="sk-box sk-thumb"></div><div class="sk-lines"><div class="sk-box sk-line w70"></div><div class="sk-box sk-line w45"></div></div></div>
+          </div>
+          <div id="ph-sentinel" style="height:1px;"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Stations section is now embedded inside Listen tab -->
+
+<div id="section-brands" class="section-page" style="display:none;">
+  <div class="section-inner">
+    <header>
+      <h1>Manage Brands</h1>
+      <p>Add, View &amp; Manage Brands</p>
+      <div class="divider"></div>
+    </header>
+
+    <!-- ══ PANEL: Brands ══ -->
+    <div id="po-panel-brands">
+      <!-- Add Brand -->
+      <div class="card" id="br-addCard">
+        <div class="card-title" id="br-formTitle">Add New Brand</div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>UID <span style="font-weight:300;text-transform:none;letter-spacing:0;">(alphanumeric)</span></label>
+            <div style="display:flex;gap:0.4rem;align-items:center;">
+              <input type="text" id="br-fUid" placeholder="e.g. a1b2c3" readonly style="flex:1;font-family:monospace;font-size:0.82rem;background:var(--bg);color:var(--muted);"/>
+            </div>
+          </div>
+          <div class="field">
+            <label>ID <span style="font-weight:300;text-transform:none;letter-spacing:0;">(numeric)</span></label>
+            <input type="number" id="br-fId" placeholder="e.g. 1" min="1" step="1"/>
+          </div>
+        </div>
+        <div class="field">
+          <label>Brand Name</label>
+          <input type="text" id="br-fTitle" placeholder="e.g. Samsung" oninput="(function(v){var s=document.getElementById('br-fSlug');if(s&&!s.dataset.manual)s.value=v.toLowerCase().replace(/[^\w\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').trim();})(this.value)"/>
+        </div>
+        <div class="field">
+          <label>Slug</label>
+          <input type="text" id="br-fSlug" placeholder="e.g. samsung" oninput="this.dataset.manual='1'"/>
+        </div>
+
+        <div class="field">
+          <label>Logo URL</label>
+          <input type="text" id="br-fImg" placeholder="https://..." oninput="(function(v){var p=document.getElementById('br-imgPreview'),t=document.getElementById('br-imgThumb');if(v){t.src=v;p.style.display='block';}else{p.style.display='none';}})(this.value)"/>
+          <div id="br-imgPreview" style="margin-top:0.5rem;display:none;">
+            <img id="br-imgThumb" src="" style="height:64px;border-radius:8px;border:1px solid var(--border);object-fit:cover;"/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Description <span style="font-weight:300;text-transform:none;letter-spacing:0;">(ঐচ্ছিক)</span></label>
+          <textarea id="br-fDesc" placeholder="Short description..." rows="3"></textarea>
+        </div>
+
+        <div class="btn-row">
+          <button class="action-btn" id="br-cancelBtn" onclick="BR_cancelEdit()">Cancel</button>
+          <button class="action-btn primary" id="br-submitBtn" onclick="BR_submitBrand()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Brand
+          </button>
+        </div>
+      </div>
+
+      <!-- Brand List -->
+      <div style="animation: fadeUp 0.5s ease 0.2s both;">
+        <div class="lib-header">
+          <span class="lib-title">All Brands</span>
+          <div class="lib-right">
+            <span class="lib-count" id="br-itemCount">0 brands</span>
+            <button class="refresh-btn" id="br-refreshBtn" onclick="BR_loadAll()">
+              <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <div class="search-wrap">
+          <div class="search-row">
+            <input type="text" placeholder="Search brands..." id="br-searchInput" oninput="BR_filterItems()"/>
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+        </div>
+        <div class="lib-card">
+          <div class="item-list" id="br-itemList">
+            <div class="sk-item"><div class="sk-box sk-thumb"></div><div class="sk-lines"><div class="sk-box sk-line w70"></div><div class="sk-box sk-line w45"></div></div></div>
+            <div class="sk-item"><div class="sk-box sk-thumb"></div><div class="sk-lines"><div class="sk-box sk-line w70"></div><div class="sk-box sk-line w45"></div></div></div>
+            <div class="sk-item"><div class="sk-box sk-thumb"></div><div class="sk-lines"><div class="sk-box sk-line w70"></div><div class="sk-box sk-line w45"></div></div></div>
+          </div>
+          <div id="br-sentinel" style="height:1px;"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="section-media" class="section-page" style="display:none;">
+  <div class="section-inner">
+<header>
+    <h1>Media Manager</h1>
+    <p>Upload &amp; manage your media files</p>
+    <div class="divider"></div>
+  </header>
+
+  <!-- Upload Card -->
+  <div class="card" style="animation: fadeUp 0.5s ease 0.1s both;">
+
+
+    <div class="file-input-row" id="md-dropzone">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <span class="file-input-label" id="md-fileLabel">No files chosen</span>
+      <label class="file-input-btn">
+        Browse
+        <input type="file" id="md-fileInput" accept="*/*" multiple/>
+      </label>
+    </div>
+
+    <div class="MD_queue-list" id="md-queueList"></div>
+    <div class="MD_queue-summary" id="md-queueSummary"></div>
+
+    <button class="upload-all-btn" id="md-uploadAllBtn" disabled>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Upload
+    </button>
+
+    <div class="error-msg" id="md-errorMsg"></div>
+  </div>
+
+  <!-- Library -->
+  <div class="library-section">
+    <div class="lib-card">
+      <div class="search-wrap">
+        <div class="search-input-row">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="md-searchInput" placeholder="Search files…"/>
+          <button class="search-clear" id="searchClear">✕</button>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:0.55rem;">
+          <div style="display:flex; align-items:center; gap:0.4rem;">
+            <span class="lib-count" id="md-libCount">—</span>
+            <span class="lib-count" id="md-libStorage">—</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.4rem;">
+            <button class="refresh-btn" id="md-refreshBtn">
+              <svg viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="file-list" id="md-fileList"></div>
+      <div id="md-scrollLoader" style="display:none; text-align:center; padding:0.75rem 1.5rem 1rem;">
+        <span style="display:inline-block; width:18px; height:18px; border:2px solid var(--border2); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite;"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, get, remove, child, update, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBhqSpbZpWHbtChgpWbZfY1Yb3_xip_2jk",
+    authDomain: "mobile-khujo.firebaseapp.com",
+    projectId: "mobile-khujo",
+    databaseURL: "https://mobile-khujo-default-rtdb.asia-southeast1.firebasedatabase.app",
+    storageBucket: "mobile-khujo.firebasestorage.app",
+    messagingSenderId: "1065425100783",
+    appId: "1:1065425100783:web:d43c27e2b7bcc9354be01a"
+  };
+
+  const _app = initializeApp(firebaseConfig);
+  const _rtdb = getDatabase(_app);
+  const _auth = getAuth(_app);
+
+  const _db_channels = _rtdb;
+  const _db_watch_category = _rtdb;
+  const _db_videos = _rtdb;
+  const _db_stations = _rtdb;
+  const _db_episodes = _rtdb;
+  const _db_podcast_category = _rtdb;
+  const _db_media = _rtdb;
+
+  window.showToast = function(msg, type) {
+    type = type || "";
+    const t = document.getElementById("toast");
+    t.textContent = msg; t.className = "toast " + type; t.classList.add("show");
+    setTimeout(function() { t.classList.remove("show"); }, 2500);
+  };
+
+  // ── Shared client-side infinite scroll pager ──────────────────
+  // entries: sorted array, listEl: DOM element, sentinelId: string
+  // renderFn(entry): returns HTML string for one item
+  window.createPager = function(entries, listEl, sentinelId, renderFn, emptyHTML) {
+    const PAGE = 15;
+    let page = 0;
+    let done = false;
+
+    function renderPage() {
+      if (done) return;
+      const slice = entries.slice(page * PAGE, (page + 1) * PAGE);
+      if (!slice.length) { done = true; return; }
+      slice.forEach(entry => {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = renderFn(entry);
+        while (tmp.firstChild) listEl.appendChild(tmp.firstChild);
+      });
+      page++;
+      if (page * PAGE >= entries.length) done = true;
+    }
+
+    listEl.innerHTML = '';
+    if (!entries.length) { listEl.innerHTML = emptyHTML; return; }
+    renderPage(); // first page immediately
+
+    const sentinel = document.getElementById(sentinelId);
+    if (!sentinel) return;
+    // disconnect previous observer on this sentinel
+    if (sentinel._pagerObserver) sentinel._pagerObserver.disconnect();
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting && !done) renderPage(); }, { threshold: 0.1 });
+    obs.observe(sentinel);
+    sentinel._pagerObserver = obs;
+  };
+
+  var LOAD_FNS = { media: "MD_loadLibrary", phones: "PH_loadAll", brands: "BR_loadAll" };
+  var loadedSections = {};
+  var currentSection = "media";
+
+  var SECTION_TITLES = {
+    media: "Media Manager",
+    phones: "Manage Phones",
+    brands: "Manage Brands"
+  };
+
+  // ─── KEY EDIT TOGGLE (shared) ───────────────────────────────
+  function showSection(key) {
+    document.querySelectorAll(".section-page").forEach(function(el) { el.style.display = "none"; });
+    var page = document.getElementById("section-" + key);
+    if (!page) return;
+    page.style.display = "block";
+    window.scrollTo(0, 0);
+    currentSection = key;
+    // update tab active state
+    document.querySelectorAll(".tab-item").forEach(function(btn) {
+      btn.classList.toggle("active", btn.dataset.section === key);
+    });
+    // lazy-load section data
+    if (!loadedSections[key] && LOAD_FNS[key] && typeof window[LOAD_FNS[key]] === "function") {
+      window[LOAD_FNS[key]]();
+      loadedSections[key] = true;
+    }
+  }
+
+  // Ripple effect (kept for future use)
+  document.addEventListener("click", function(e) {
+    var card = e.target.closest(".folder-card");
+    if (!card) return;
+    var wrap = card.querySelector(".ripple-wrap");
+    if (!wrap) return;
+    var r = document.createElement("div");
+    r.className = "ripple";
+    var rect = card.getBoundingClientRect();
+    var size = Math.max(rect.width, rect.height);
+    r.style.cssText = "width:" + size + "px;height:" + size + "px;left:" + (e.clientX - rect.left - size/2) + "px;top:" + (e.clientY - rect.top - size/2) + "px";
+    wrap.appendChild(r);
+    setTimeout(function() { r.remove(); }, 600);
+  });
+
+  window.switchTab = function(key) {
+    window.location.hash = key;
+  };
+
+  window.openSection = function(key) {
+    window.location.hash = key;
+  };
+
+  window.goBack = function() {
+    window.location.hash = "media";
+  };
+
+  function handleHash() {
+    var hash = window.location.hash.replace("#", "").trim();
+    var validKeys = ["media", "phones", "brands"];
+    var key = (hash && validKeys.indexOf(hash) !== -1) ? hash : "media";
+    showSection(key);
+  }
+
+  window.addEventListener("hashchange", handleHash);
+
+  function showDashboard() {
+    document.getElementById("loadingScreen").style.display = "none";
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("bottomTabBar").style.display = "flex";
+    initAllSections();
+    var hash = window.location.hash.replace("#", "").trim();
+    var validKeys = ["media", "phones", "brands"];
+    var startKey = (hash && validKeys.indexOf(hash) !== -1) ? hash : "media";
+    showSection(startKey);
+  }
+
+  function showLogin() {
+    document.getElementById("loadingScreen").style.display = "none";
+    document.getElementById("loginScreen").style.display = "flex";
+  }
+
+  window.doLogin = async function() {
+    const email = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value;
+    const btn = document.getElementById("login-btn");
+    const errEl = document.getElementById("login-error");
+    errEl.style.display = "none";
+
+    if (!email || !password) {
+      errEl.textContent = "Please enter your email and password.";
+      errEl.style.display = "block";
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = `<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;"></div>`;
+
+    try {
+      await signInWithEmailAndPassword(_auth, email, password);
+      // onAuthStateChanged will fire and handle the rest
+    } catch(e) {
+      const codes = {
+        'auth/user-not-found': 'No account found with this email.',
+        'auth/wrong-password': 'Incorrect password.',
+        'auth/invalid-email': 'Invalid email address.',
+        'auth/invalid-credential': 'Invalid email or password.',
+        'auth/too-many-requests': 'Too many attempts. Please try again later.',
+      };
+      errEl.textContent = codes[e.code] || e.message;
+      errEl.style.display = "block";
+      btn.disabled = false;
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> Sign In`;
+    }
+  };
+
+  // Enter key support
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && document.getElementById("loginScreen").style.display === "flex") {
+      window.doLogin();
+    }
+  });
+
+  onAuthStateChanged(_auth, function(user) {
+    if (user && user.email === "phys.arif@gmail.com") {
+      showDashboard();
+    } else if (user) {
+      _auth.signOut();
+      showLogin();
+    } else {
+      showLogin();
+    }
+  });
+
+  function initAllSections() {
+
+    // === CHANNELS ===
+    (function() {
+      var db = _db_channels;
+      var auth = _auth;
+      let CH_allChannels = {};
+        let CH_editingKey  = null;
+
+        // ─── AUTH CHECK ──────────────────────────────────────
+
+        // ─── AUTO KEY GENERATOR ─────────────────────────────
+        function CH_getNextKey() {
+          const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+          let suffix = "";
+          for (let i = 0; i < 8; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
+          const key = "c_" + suffix;
+          // collision check
+          return CH_allChannels[key] ? CH_getNextKey() : key;
+        }
+
+        // Show auto key when adding
+        function CH_updateAutoKey() {
+          if (!CH_editingKey) {
+            document.getElementById("ch-fKey").value = CH_getNextKey();
+          }
+        }
+
+        // ─── LOAD channels ──────────────────────────────────
+        window.CH_loadChannels = async function() {
+          const btn = document.getElementById("ch-refreshBtn");
+          btn.classList.add("loading");
+          try {
+            const snap = await get(child(ref(db), "channels"));
+            CH_allChannels = snap.exists() ? snap.val() : {};
+            CH_renderChannels(CH_allChannels);
+            CH_updateAutoKey();
+          } catch(e) {
+            showToast("Failed to load: " + e.message, "error-t");
+          }
+          btn.classList.remove("loading");
+        };
+
+        function CH_renderChannels(data) {
+          const list = document.getElementById("ch-channelList");
+          const entries = Object.entries(data).sort((a, b) => (b[1].id || 0) - (a[1].id || 0));
+          document.getElementById("ch-channelCount").textContent = entries.length + " channel" + (entries.length !== 1 ? "s" : "");
+          createPager(entries, list, "ch-sentinel",
+            ([key, s]) => {
+              const imgTag = s.img
+                ? `<img class="ci-thumb" src="${CH_esc(s.img)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""/><div class="ci-thumb-placeholder" style="display:none;">📺</div>`
+                : `<div class="ci-thumb-placeholder">📺</div>`;
+              return `<div class="channel-item">${imgTag}<div class="ci-info"><div class="ci-name">${CH_esc(s.name || key)}</div><div class="ci-meta"><span class="ci-id">#${s.id || "—"}</span>${s.desc ? `<span style="margin-left:0.4rem;">${CH_esc(s.desc)}</span>` : ""}</div></div><div class="ci-actions"><button class="ci-btn edit" onclick="CH_editChannel('${key}')">Edit</button><button class="ci-btn del" style="color:#e53e3e;border-color:#e53e3e;" onclick="CH_deleteChannel('${key}')">Delete</button></div></div>`;
+            },
+            `<div class="empty-state"><div class="empty-icon">📺</div>No channels yet. Add one above!</div>`
+          );
+        }
+
+        function CH_esc(str) {
+          if (!str) return "";
+          return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+        }
+
+        // ─── SEARCH ─────────────────────────────────────────
+        window.CH_filterChannels = function() {
+          const q = document.getElementById("ch-searchInput").value.toLowerCase();
+          if (!q) { CH_renderChannels(CH_allChannels); return; }
+          const filtered = {};
+          Object.entries(CH_allChannels).forEach(([k, v]) => {
+            if ((v.name||"").toLowerCase().includes(q) || k.toLowerCase().includes(q) || (v.url||"").toLowerCase().includes(q)) {
+              filtered[k] = v;
+            }
+          });
+          CH_renderChannels(filtered);
+        };
+
+        // ─── SUBMIT (add / update) ──────────────────────────
+        window.CH_submitChannel = async function() {
+          const id   = parseInt(document.getElementById("ch-fId").value) || 0;
+          const key  = CH_editingKey || CH_getNextKey();
+          const name = document.getElementById("ch-fName").value.trim();
+          const url  = document.getElementById("ch-fUrl").value.trim();
+          const img  = document.getElementById("ch-fImg").value.trim();
+          const desc = document.getElementById("ch-fDesc").value.trim();
+          const seo  = document.getElementById("ch-fSeo").value.trim();
+
+          if (!name) { showToast("Name is required!", "error-t"); return; }
+
+          const btn = document.getElementById("ch-submitBtn");
+          btn.disabled = true;
+          btn.textContent = "Saving...";
+
+          try {
+            await set(ref(db, "channels/" + key), { id, name, url, img, desc, seo });
+            CH_allChannels[key] = { id, name, url, img, desc, seo };
+            CH_renderChannels(CH_allChannels);
+            const wasEditing = !!CH_editingKey;
+            CH_editingKey = null;
+            CH_clearForm();
+            showToast(wasEditing ? "Channel updated!" : "Channel added!", "success");
+          } catch(e) {
+            showToast("Error: " + e.message, "error-t");
+          }
+
+          btn.disabled = false;
+          btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Channel`;
+        };
+
+        // ─── EDIT ────────────────────────────────────────────
+        window.CH_editChannel = function(key) {
+          const s = CH_allChannels[key];
+          if (!s) return;
+          CH_editingKey = key;
+
+          document.getElementById("ch-fId").value   = s.id   || "";
+          document.getElementById("ch-fKey").value  = key;
+          document.getElementById("ch-fName").value = s.name || "";
+          document.getElementById("ch-fUrl").value  = s.url  || "";
+          document.getElementById("ch-fImg").value  = s.img  || "";
+          document.getElementById("ch-fDesc").value = s.desc || "";
+          document.getElementById("ch-fSeo").value  = s.seo  || "";
+
+          document.getElementById("ch-formTitle").textContent = "Edit Channel — " + key;
+          document.getElementById("ch-submitBtn").innerHTML = `✎ Update Channel`;
+          document.getElementById("ch-cancelBtn").style.display = "inline-flex";
+          document.getElementById("ch-addCard").scrollIntoView({ behavior: "smooth" });
+        };
+
+        window.CH_cancelEdit = function() {
+          CH_editingKey = null;
+          CH_clearForm();
+        };
+
+        function CH_clearForm() {
+          ["ch-fId","ch-fName","ch-fUrl","ch-fImg","ch-fDesc","ch-fSeo"].forEach(id => document.getElementById(id).value = "");
+          document.getElementById("ch-formTitle").textContent = "Add New TV Channel";
+          document.getElementById("ch-submitBtn").innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Channel`;
+          document.getElementById("ch-cancelBtn").style.display = "none";
+          CH_editingKey = null;
+          CH_updateAutoKey();
+        }
+
+        // ─── DELETE ──────────────────────────────────────────
+        window.CH_deleteChannel = async function(key) {
+          if (!confirm(`Delete "${key}"? This cannot be undone.`)) return;
+          try {
+            await remove(ref(db, "channels/" + key));
+            delete CH_allChannels[key];
+            CH_renderChannels(CH_allChannels);
+            showToast("Channel deleted.", "success");
+          } catch(e) {
+            showToast("Error: " + e.message, "error-t");
+          }
+        };
+
+        // ─── TOAST ───────────────────────────────────────────
+    })();
+
+    // === SPORTS ===
+    (function() {
+      var db = _db_videos; // uses same RTDB instance
+      let SP_allMatches = {};
+      let SP_editingKey = null;
+
+      function SP_getNextKey() {
+        const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+        let suffix = "";
+        for (let i = 0; i < 8; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
+        const key = "match_" + suffix;
+        return SP_allMatches[key] ? SP_getNextKey() : key;
+      }
+
+      function SP_updateAutoKey() {
+        if (!SP_editingKey) {
+          document.getElementById("sp-fKey").value = SP_getNextKey();
+        }
+      }
+
+      window.SP_syncTimestamp = function() {
+        const picker = document.getElementById("sp-fMatchTimePicker").value;
+        if (!picker) {
+          document.getElementById("sp-fMatchTime").value = "";
+          document.getElementById("sp-fMatchTimeDisplay").textContent = "—";
+          return;
+        }
+        const unix = Math.floor(new Date(picker).getTime() / 1000);
+        document.getElementById("sp-fMatchTime").value = unix;
+        document.getElementById("sp-fMatchTimeDisplay").textContent = unix;
+      };
+
+      window.SP_loadMatches = async function() {
+        const btn = document.getElementById("sp-refreshBtn");
+        btn.classList.add("loading");
+        try {
+          const snap = await get(child(ref(db), "sports"));
+          SP_allMatches = snap.exists() ? snap.val() : {};
+          SP_renderMatches(SP_allMatches);
+          SP_updateAutoKey();
+        } catch(e) {
+          showToast("Failed to load: " + e.message, "error-t");
+        }
+        btn.classList.remove("loading");
+      };
+
+      function SP_esc(str) {
+        if (!str) return "";
+        return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+      }
+
+      function SP_flagEmoji(code) {
+        if (!code || code.length !== 2) return "🏳️";
+        return String.fromCodePoint(...[...code.toUpperCase()].map(c => 0x1F1E6 + c.charCodeAt(0) - 65));
+      }
+
+      function SP_renderMatches(data) {
+        const list = document.getElementById("sp-matchList");
+        const entries = Object.entries(data).sort((a, b) => (b[1].match_time || 0) - (a[1].match_time || 0));
+        document.getElementById("sp-matchCount").textContent = entries.length + " match" + (entries.length !== 1 ? "es" : "");
+        if (!entries.length) {
+          list.innerHTML = `<div class="empty-state"><div class="empty-icon">⚽</div>No matches yet. Add one above!</div>`;
+          return;
+        }
+        list.innerHTML = entries.map(([key, s]) => {
+          const timeStr = s.match_time ? new Date(s.match_time * 1000).toLocaleString() : "—";
+          return `<div class="channel-item">
+            <div class="ci-thumb-placeholder" style="font-size:1.3rem;min-width:48px;width:48px;height:48px;flex-direction:column;gap:1px;">${SP_flagEmoji(s.flag_a)}<br>${SP_flagEmoji(s.flag_b)}</div>
+            <div class="ci-info" style="flex:1;min-width:0;">
+              <div class="ci-name">${SP_esc(s.team_a)} vs ${SP_esc(s.team_b)}</div>
+              <div class="ci-meta" style="margin-top:2px;">${timeStr}</div>
+            </div>
+            <div class="ci-actions">
+              <button class="ci-btn edit" onclick="SP_editMatch('${SP_esc(key)}')">Edit</button>
+              <button class="ci-btn del" style="color:#e53e3e;border-color:#e53e3e;" onclick="SP_deleteMatch('${SP_esc(key)}')">Delete</button>
+            </div>
+          </div>`;
+        }).join("");
+      }
+
+      window.SP_filterMatches = function() {
+        const q = document.getElementById("sp-searchInput").value.toLowerCase();
+        if (!q) { SP_renderMatches(SP_allMatches); return; }
+        const filtered = {};
+        Object.entries(SP_allMatches).forEach(([k, v]) => {
+          if ((v.title||"").toLowerCase().includes(q) || (v.team_a||"").toLowerCase().includes(q) || (v.team_b||"").toLowerCase().includes(q) || k.toLowerCase().includes(q)) {
+            filtered[k] = v;
+          }
+        });
+        SP_renderMatches(filtered);
+      };
+
+      window.SP_submitMatch = async function() {
+        const key       = SP_editingKey || document.getElementById("sp-fKey").value.trim() || SP_getNextKey();
+        const title     = document.getElementById("sp-fTitle").value.trim();
+        const team_a    = document.getElementById("sp-fTeamA").value.trim();
+        const team_b    = document.getElementById("sp-fTeamB").value.trim();
+        const flag_a    = document.getElementById("sp-fFlagA").value.trim().toLowerCase();
+        const flag_b    = document.getElementById("sp-fFlagB").value.trim().toLowerCase();
+        const stage     = document.getElementById("sp-fStage").value.trim();
+        const match_time= parseInt(document.getElementById("sp-fMatchTime").value) || 0;
+        const stream_url= document.getElementById("sp-fStreamUrl").value.trim();
+        const intro     = document.getElementById("sp-fIntro").value.trim();
+        const highlights= document.getElementById("sp-fHighlights").value.trim();
+        const direct    = document.getElementById("sp-fDirect").value.trim();
+        const is_active = document.getElementById("sp-fActive").checked;
+
+        if (!title) { showToast("Match title is required!", "error-t"); return; }
+        if (!team_a || !team_b) { showToast("Both team names are required!", "error-t"); return; }
+
+        const btn = document.getElementById("sp-submitBtn");
+        btn.disabled = true; btn.textContent = "Saving...";
+
+        const payload = { title, team_a, team_b, flag_a, flag_b, stage, match_time, stream_url, intro, highlights, direct, is_active };
+        try {
+          await set(ref(db, "sports/" + key), payload);
+          SP_allMatches[key] = payload;
+          SP_renderMatches(SP_allMatches);
+          const wasEditing = !!SP_editingKey;
+          SP_editingKey = null;
+          SP_clearForm();
+          showToast(wasEditing ? "Match updated!" : "Match added!", "success");
+        } catch(e) {
+          showToast("Error: " + e.message, "error-t");
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Match`;
+      };
+
+      window.SP_editMatch = function(key) {
+        const s = SP_allMatches[key];
+        if (!s) return;
+        SP_editingKey = key;
+        document.getElementById("sp-fKey").value       = key;
+        document.getElementById("sp-fTitle").value     = s.title || "";
+        document.getElementById("sp-fTeamA").value     = s.team_a || "";
+        document.getElementById("sp-fTeamB").value     = s.team_b || "";
+        document.getElementById("sp-fFlagA").value     = s.flag_a || "";
+        document.getElementById("sp-fFlagB").value     = s.flag_b || "";
+        document.getElementById("sp-fStage").value     = s.stage || "";
+        document.getElementById("sp-fMatchTime").value = s.match_time || "";
+        if (s.match_time) {
+          const d = new Date(s.match_time * 1000);
+          const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0,16);
+          document.getElementById("sp-fMatchTimePicker").value = local;
+          document.getElementById("sp-fMatchTimeDisplay").textContent = s.match_time;
+        } else {
+          document.getElementById("sp-fMatchTimePicker").value = "";
+          document.getElementById("sp-fMatchTimeDisplay").textContent = "—";
+        }
+        document.getElementById("sp-fStreamUrl").value = s.stream_url || "";
+        document.getElementById("sp-fIntro").value      = s.intro      || "";
+        document.getElementById("sp-fHighlights").value = s.highlights || "";
+        document.getElementById("sp-fDirect").value     = s.direct     || "";
+        document.getElementById("sp-fActive").checked  = !!s.is_active;
+        document.getElementById("sp-fActive").dispatchEvent(new Event("change"));
+        document.getElementById("sp-formTitle").textContent = "Edit Match — " + key;
+        document.getElementById("sp-submitBtn").innerHTML = `✎ Update Match`;
+        document.getElementById("sp-cancelBtn").style.display = "inline-flex";
+        document.getElementById("sp-addCard").scrollIntoView({ behavior: "smooth" });
+      };
+
+      window.SP_cancelEdit = function() {
+        SP_editingKey = null;
+        SP_clearForm();
+      };
+
+      function SP_clearForm() {
+        ["sp-fTitle","sp-fTeamA","sp-fTeamB","sp-fFlagA","sp-fFlagB","sp-fStage","sp-fStreamUrl","sp-fIntro","sp-fHighlights","sp-fDirect"].forEach(id => document.getElementById(id).value = "");
+        document.getElementById("sp-fMatchTimePicker").value = "";
+        document.getElementById("sp-fMatchTime").value = "";
+        document.getElementById("sp-fMatchTimeDisplay").textContent = "—";
+        document.getElementById("sp-fActive").checked = true;
+        document.getElementById("sp-fActive").dispatchEvent(new Event("change"));
+        document.getElementById("sp-formTitle").textContent = "Add Match";
+        document.getElementById("sp-submitBtn").innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Match`;
+        document.getElementById("sp-cancelBtn").style.display = "none";
+        SP_editingKey = null;
+        SP_updateAutoKey();
+      }
+
+      window.SP_deleteMatch = async function(key) {
+        if (!confirm(`Delete "${key}"? This cannot be undone.`)) return;
+        try {
+          await remove(ref(db, "sports/" + key));
+          delete SP_allMatches[key];
+          SP_renderMatches(SP_allMatches);
+          showToast("Match deleted.", "success");
+        } catch(e) {
+          showToast("Error: " + e.message, "error-t");
+        }
+      };
+    })();
+
+    // === WATCH_CATEGORY ===
+    (function() {
+      var db = _db_watch_category;
+      var auth = _auth;
+      let WC_allItems   = {};
+        let WC_editingKey = null;
+
+        function WC_getNextKey() {
+          const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+          let suffix = "";
+          for (let i = 0; i < 8; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
+          const key = "cat_" + suffix;
+          return WC_allItems[key] ? WC_getNextKey() : key;
+        }
+
+        function WC_updateAutoKey() {
+          if (!WC_editingKey) document.getElementById("wc-fKey").value = WC_getNextKey();
+        }
+
+        window.WC_loadCategories = async function() {
+          const btn = document.getElementById("wc-refreshBtn");
+          btn.classList.add("loading");
+          try {
+            const snap = await get(child(ref(db), "watches"));
+            WC_allItems = snap.exists() ? snap.val() : {};
+            WC_renderItems(WC_allItems);
+            WC_updateAutoKey();
+          } catch(e) {
+            showToast("Failed to load: " + e.message, "error-t");
+          }
+          btn.classList.remove("loading");
+        };
+
+        function WC_renderItems(data) {
+          const list = document.getElementById("wc-itemList");
+          const entries = Object.entries(data).sort((a, b) => (b[1].id || 0) - (a[1].id || 0));
+          document.getElementById("wc-itemCount").textContent = entries.length + " categor" + (entries.length !== 1 ? "ies" : "y");
+          createPager(entries, list, "wc-sentinel",
+            ([key, s]) => {
+              const imgTag = s.img
+                ? `<img class="li-thumb" src="${WC_esc(s.img)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""/><div class="li-thumb-placeholder" style="display:none;">🎙️</div>`
+                : `<div class="li-thumb-placeholder">🎙️</div>`;
+              return `<div class="list-item">${imgTag}<div class="li-info"><div class="li-name">${WC_esc(s.title || key)}</div><div class="li-meta"><span class="li-id">#${s.id || "—"}</span>${s.desc ? `<span>${WC_esc(s.desc)}</span>` : ""}</div></div><div class="li-actions"><button class="si-btn edit" onclick="WC_editItem('${key}')">Edit</button><button class="si-btn del" style="color:#e53e3e;border-color:#e53e3e;" onclick="WC_deleteItem('${key}')">Delete</button></div></div>`;
+            },
+            `<div class="empty-state"><div class="empty-icon">🎙️</div>No categories yet. Add one above!</div>`
+          );
+        }
+
+        function WC_esc(str) {
+          if (!str) return "";
+          return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+        }
+
+        window.WC_filterItems = function() {
+          const q = document.getElementById("wc-searchInput").value.toLowerCase();
+          if (!q) { WC_renderItems(WC_allItems); return; }
+          const filtered = {};
+          Object.entries(WC_allItems).forEach(([k, v]) => {
+            if ((v.title||"").toLowerCase().includes(q) || k.toLowerCase().includes(q)) filtered[k] = v;
+          });
+          WC_renderItems(filtered);
+        };
+
+        window.WC_submitCategory = async function() {
+          const id    = parseInt(document.getElementById("wc-fId").value) || 0;
+          const key   = WC_editingKey || WC_getNextKey();
+          const title = document.getElementById("wc-fTitle").value.trim();
+          const img   = document.getElementById("wc-fImg").value.trim();
+          const cover = document.getElementById("wc-fCover").value.trim();
+          const desc  = document.getElementById("wc-fDesc").value.trim();
+          const seo   = document.getElementById("wc-fSeo").value.trim();
+
+          if (!title) { showToast("Title is required!", "error-t"); return; }
+
+          const btn = document.getElementById("wc-submitBtn");
+          btn.disabled = true; btn.textContent = "Saving...";
+
+          try {
+            await set(ref(db, "watches/" + key), { id, title, img, cover, desc, seo });
+            WC_allItems[key] = { id, title, img, cover, desc, seo };
+            WC_renderItems(WC_allItems);
+            const wasEditing = !!WC_editingKey;
+            WC_editingKey = null;
+            WC_clearForm();
+            showToast(wasEditing ? "Category updated!" : "Category added!", "success");
+          } catch(e) {
+            showToast("Error: " + e.message, "error-t");
+          }
+
+          btn.disabled = false;
+          btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Category`;
+        };
+
+        window.WC_editItem = function(key) {
+          const s = WC_allItems[key];
+          if (!s) return;
+          WC_editingKey = key;
+          document.getElementById("wc-fId").value    = s.id    || "";
+          document.getElementById("wc-fKey").value   = key;
+          document.getElementById("wc-fTitle").value = s.title || "";
+          document.getElementById("wc-fImg").value   = s.img   || "";
+          document.getElementById("wc-fCover").value = s.cover || "";
+          document.getElementById("wc-fDesc").value  = s.desc  || "";
+          document.getElementById("wc-fSeo").value   = s.seo   || "";
+          document.getElementById("wc-formTitle").textContent = "Edit Category — " + key;
+          document.getElementById("wc-submitBtn").innerHTML = `✎ Update Category`;
+          document.getElementById("wc-cancelBtn").style.display = "inline-flex";
+          document.getElementById("wc-addCard").scrollIntoView({ behavior: "smooth" });
+        };
+
+        window.WC_cancelEdit = function() { WC_editingKey = null; WC_clearForm(); };
+
+        function WC_clearForm() {
+          ["wc-fId","wc-fTitle","wc-fImg","wc-fCover","wc-fDesc","wc-fSeo"].forEach(id => document.getElementById(id).value = "");
+          document.getElementById("wc-formTitle").textContent = "Add New Category";
+          document.getElementById("wc-submitBtn").innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Category`;
+          document.getElementById("wc-cancelBtn").style.display = "none";
+          WC_editingKey = null;
+          WC_updateAutoKey();
+        }
+
+        window.WC_deleteItem = async function(key) {
+          if (!confirm(`Delete "${key}"? This cannot be undone.`)) return;
+          try {
+            await remove(ref(db, "watches/" + key));
+            delete WC_allItems[key];
+            WC_renderItems(WC_allItems);
+            showToast("Category deleted.", "success");
+          } catch(e) {
+            showToast("Error: " + e.message, "error-t");
+          }
+        };
+    })();
+
+    // === PHONES ===
+    (function() {
+      var db = _rtdb;
+      let allPhones     = {};
+      let PH_editingKey = null;
+      let PH_brands     = {};
+
+      // ─── Spec schema (group -> id-suffix, field list) ─────
+      const SPEC_GROUPS = {
+        network:       { id: 'net',        fields: ['bands2g','bands3g','bands4g','bands5g'] },
+        body:          { id: 'body',       fields: ['dimensions','weight_g','build','sim','protection'] },
+        display:       { id: 'display',    fields: ['type','size_inch','resolution','refresh_hz','brightness_nits'] },
+        platform:      { id: 'platform',   fields: ['os','chipset','cpu','gpu'] },
+        memory:        { id: 'memory',     fields: ['ram_gb','storage_gb','card_slot','variants'] },
+        main_camera:   { id: 'maincam',    fields: ['main_camera_mp','main_camera_setup','main_camera_features','main_camera_video'] },
+        selfie_camera: { id: 'selfiecam',  fields: ['selfie_camera_mp','selfie_camera_setup','selfie_camera_video'] },
+        sound:         { id: 'sound',      fields: ['loudspeaker','jack_3_5mm'] },
+        connectivity:  { id: 'conn',       fields: ['wlan','bluetooth','gps','nfc','fm_radio','usb'] },
+        features:      { id: 'features',   fields: ['sensors'] },
+        battery:       { id: 'battery',    fields: ['capacity_mah','charging_watt','wireless','reverse'] },
+      };
+      const SPEC_BOOL_FIELDS = new Set(['card_slot','loudspeaker','jack_3_5mm','nfc','fm_radio','wireless','reverse']);
+      const SPEC_NUM_FIELDS  = new Set(['weight_g','size_inch','refresh_hz','brightness_nits','capacity_mah','charging_watt']);
+
+      function PH_specFieldId(groupId, field) { return `ph-fSpec-${groupId}-${field}`; }
+
+      function PH_gatherSpecs() {
+        const specs = {};
+        Object.entries(SPEC_GROUPS).forEach(([group, cfg]) => {
+          const obj = {};
+          cfg.fields.forEach(field => {
+            const el = document.getElementById(PH_specFieldId(cfg.id, field));
+            if (!el) return;
+            if (SPEC_BOOL_FIELDS.has(field)) {
+              obj[field] = !!el.checked;
+            } else if (SPEC_NUM_FIELDS.has(field)) {
+              const v = el.value.trim();
+              obj[field] = v ? Number(v) : null;
+            } else {
+              obj[field] = el.value.trim();
+            }
+          });
+          specs[group] = obj;
+        });
+        return specs;
+      }
+
+      function PH_populateSpecs(specs) {
+        specs = specs || {};
+        Object.entries(SPEC_GROUPS).forEach(([group, cfg]) => {
+          const groupData = specs[group] || {};
+          cfg.fields.forEach(field => {
+            const el = document.getElementById(PH_specFieldId(cfg.id, field));
+            if (!el) return;
+            if (SPEC_BOOL_FIELDS.has(field)) {
+              el.checked = !!groupData[field];
+            } else {
+              el.value = (groupData[field] === undefined || groupData[field] === null) ? '' : groupData[field];
+            }
+          });
+        });
+      }
+
+      function PH_clearSpecs() {
+        Object.entries(SPEC_GROUPS).forEach(([group, cfg]) => {
+          cfg.fields.forEach(field => {
+            const el = document.getElementById(PH_specFieldId(cfg.id, field));
+            if (!el) return;
+            if (SPEC_BOOL_FIELDS.has(field)) el.checked = false;
+            else el.value = '';
+          });
+        });
+      }
+
+      // ─── UID gen ────────────────────────────────────────
+      function PH_makeUid() {
+        const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+        let s = "";
+        for (let i = 0; i < 6; i++) s += chars[Math.floor(Math.random() * chars.length)];
+        return s;
+      }
+      function PH_genSlug(name) {
+        return name.toLowerCase().replace(/[^\w\s-]/g,'').trim().replace(/[\s_-]+/g,'-');
+      }
+      function PH_esc(str) {
+        if (!str) return "";
+        return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+      }
+      window.PH_onNameInput = function(name) {
+        const slugEl = document.getElementById("ph-fSlug");
+        if (!PH_editingKey && (!slugEl.value || slugEl.dataset.auto !== 'false')) {
+          slugEl.value = PH_genSlug(name);
+          slugEl.dataset.auto = 'true';
+        }
+      };
+
+      // ─── Load brands for datalist suggestions ──────────────
+      async function PH_loadBrandsList() {
+        try {
+          const snap = await get(child(ref(db), 'brands'));
+          PH_brands = snap.exists() ? snap.val() : {};
+          const sel = document.getElementById('ph-fBrand');
+          const current = sel.value;
+          sel.innerHTML = '<option value="">— Select Brand —</option>' +
+            Object.entries(PH_brands).map(([key, b]) => {
+              const name = b.title || b.name || key;
+              return `<option value="${key}">${PH_esc(name)}</option>`;
+            }).join('');
+          if (current) sel.value = current;
+        } catch(e) {
+          console.warn('Brand list load error:', e);
+        }
+      }
+
+      function PH_brandName(key) {
+        if (!key) return '';
+        const b = PH_brands[key];
+        return b ? (b.title || b.name || key) : key;
+      }
+
+      // ─── LOAD phones ───────────────────────────────────────
+      window.PH_loadAll = async function() {
+        const btn = document.getElementById("ph-refreshBtn");
+        btn.classList.add("loading");
+        try {
+          const snap = await get(child(ref(db), 'phones'));
+          allPhones = snap.exists() ? snap.val() : {};
+          PH_renderItems();
+          if (!PH_editingKey && !document.getElementById("ph-fUid").value) {
+            document.getElementById("ph-fUid").value = PH_makeUid();
+          }
+        } catch(e) {
+          showToast("Failed to load: " + e.message, "error-t");
+        }
+        btn.classList.remove("loading");
+      };
+
+      // ─── RENDER ──────────────────────────────────────────
+      function PH_renderItems() {
+        const list = document.getElementById("ph-itemList");
+        const q = (document.getElementById("ph-searchInput").value || "").toLowerCase();
+        let entries = Object.entries(allPhones).filter(([,p]) =>
+          !q || (p.name||"").toLowerCase().includes(q) || PH_brandName(p.brand).toLowerCase().includes(q)
+        );
+        entries.sort((a, b) => (b[1].createdAt || 0) - (a[1].createdAt || 0));
+        document.getElementById("ph-itemCount").textContent = entries.length + " phone" + (entries.length !== 1 ? "s" : "");
+        createPager(entries, list, "ph-sentinel",
+          ([key, p]) => {
+            const imgTag = p.img
+              ? `<img class="li-thumb" src="${PH_esc(p.img)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""/><div class="li-thumb-placeholder" style="display:none;">📱</div>`
+              : `<div class="li-thumb-placeholder">📱</div>`;
+            const priceStr = p.price ? '৳' + Number(p.price).toLocaleString() : '—';
+            const statusStr = p.status ? p.status.charAt(0).toUpperCase() + p.status.slice(1) : '—';
+            return `<div class="list-item">${imgTag}<div class="li-info"><div class="li-name">${PH_esc(p.name || key)}</div><div class="li-meta"><span class="li-id">${PH_esc(priceStr)}</span><span class="li-cat">${PH_esc(PH_brandName(p.brand) || '—')} · ${PH_esc(statusStr)}</span></div></div><div class="li-actions"><button class="si-btn edit" onclick="PH_editItem('${key}')">Edit</button><button class="si-btn del" style="color:#e53e3e;border-color:#e53e3e;" onclick="PH_deleteItem('${key}')">Delete</button></div></div>`;
+          },
+          `<div class="empty-state"><div class="empty-icon">📱</div>No phones yet. Add one above!</div>`
+        );
+      }
+
+      window.PH_filterItems = function() { PH_renderItems(); };
+
+      // ─── SUBMIT ──────────────────────────────────────────
+      window.PH_submitPhone = async function() {
+        const uid       = (document.getElementById("ph-fUid").value.trim() || PH_makeUid()).replace(/[^a-zA-Z0-9_-]/g, "");
+        const idRaw     = document.getElementById("ph-fId").value.trim();
+        const id        = idRaw ? Number(idRaw) : null;
+        const name      = document.getElementById("ph-fName").value.trim();
+        const slug      = document.getElementById("ph-fSlug").value.trim() || PH_genSlug(name);
+        const brand     = document.getElementById("ph-fBrand").value.trim();
+        const priceRaw  = document.getElementById("ph-fPrice").value.trim();
+        const price     = priceRaw ? Number(priceRaw) : 0;
+        const status    = document.getElementById("ph-fStatus").value;
+        const released  = document.getElementById("ph-fReleased").value;
+        const img       = document.getElementById("ph-fImg").value.trim();
+        const galleryRaw = document.getElementById("ph-fGallery").value.trim();
+        const gallery   = galleryRaw ? galleryRaw.split("\n").map(s => s.trim()).filter(Boolean) : [];
+        const summary   = document.getElementById("ph-fSummary").value.trim();
+        const prosRaw   = document.getElementById("ph-fExtraPros").value.trim();
+        const consRaw   = document.getElementById("ph-fExtraCons").value.trim();
+        const extraPros = prosRaw ? prosRaw.split("\n").map(s => s.trim()).filter(Boolean) : [];
+        const extraCons = consRaw ? consRaw.split("\n").map(s => s.trim()).filter(Boolean) : [];
+        const specs     = PH_gatherSpecs();
+
+        if (!name)  { showToast("Name is required!", "error-t"); return; }
+
+        const key = PH_editingKey || uid;
+        const slugTaken = Object.entries(allPhones).some(([k, p]) => k !== key && (p.slug || "") === slug);
+        if (slugTaken) {
+          showToast("এই স্লাগ (" + slug + ") আগে থেকেই ব্যবহৃত হচ্ছে — অন্য একটা দাও!", "error-t");
+          document.getElementById("ph-fSlug").focus();
+          return;
+        }
+
+        const btn = document.getElementById("ph-submitBtn");
+        btn.disabled = true; btn.textContent = "Saving...";
+
+        try {
+          const existingCreatedAt = PH_editingKey && allPhones[key] ? allPhones[key].createdAt : null;
+          const data = {
+            name, slug, brand, price, status, released, img, gallery, summary,
+            createdAt: existingCreatedAt || Date.now(),
+            specs,
+          };
+          if (extraPros.length) data.extra_pros = extraPros;
+          if (extraCons.length) data.extra_cons = extraCons;
+          if (id !== null && !Number.isNaN(id)) data.id = id;
+
+          await set(ref(db, 'phones/' + key), data);
+          allPhones[key] = data;
+          showToast(PH_editingKey ? "Phone updated!" : "Phone added!", "success");
+          PH_editingKey = null;
+          PH_clearForm();
+          PH_renderItems();
+        } catch(e) {
+          showToast("Error: " + e.message, "error-t");
+        }
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Phone`;
+      };
+
+      // ─── EDIT ────────────────────────────────────────────
+      window.PH_editItem = function(key) {
+        const p = allPhones[key]; if (!p) return;
+        PH_editingKey = key;
+        document.getElementById("ph-fUid").value       = key;
+        document.getElementById("ph-fId").value        = (p.id !== undefined && p.id !== null) ? p.id : "";
+        document.getElementById("ph-fName").value      = p.name     || "";
+        document.getElementById("ph-fSlug").value      = p.slug     || "";
+        document.getElementById("ph-fSlug").dataset.auto = 'false';
+        document.getElementById("ph-fBrand").value     = p.brand    || "";
+        document.getElementById("ph-fPrice").value     = p.price    || "";
+        document.getElementById("ph-fStatus").value    = p.status   || "official";
+        document.getElementById("ph-fReleased").value  = p.released || "";
+        document.getElementById("ph-fImg").value       = p.img      || "";
+        document.getElementById("ph-fGallery").value   = Array.isArray(p.gallery) ? p.gallery.join("\n") : "";
+        document.getElementById("ph-fSummary").value   = p.summary  || "";
+        document.getElementById("ph-fExtraPros").value = Array.isArray(p.extra_pros) ? p.extra_pros.join("\n") : "";
+        document.getElementById("ph-fExtraCons").value = Array.isArray(p.extra_cons) ? p.extra_cons.join("\n") : "";
+        PH_populateSpecs(p.specs);
+        if (p.img) {
+          document.getElementById('ph-imgThumb').src = p.img;
+          document.getElementById('ph-imgPreview').style.display = 'block';
+        } else {
+          document.getElementById('ph-imgPreview').style.display = 'none';
+        }
+        document.getElementById("ph-formTitle").textContent = "Edit Phone — " + (p.name || key);
+        document.getElementById("ph-submitBtn").innerHTML = `✎ Update Phone`;
+        document.getElementById("ph-addCard").scrollIntoView({ behavior: "smooth" });
+      };
+
+      window.PH_cancelEdit = function() { PH_editingKey = null; PH_clearForm(); };
+
+      function PH_clearForm() {
+        ["ph-fId","ph-fName","ph-fSlug","ph-fBrand","ph-fPrice","ph-fReleased","ph-fImg","ph-fGallery","ph-fSummary","ph-fExtraPros","ph-fExtraCons"].forEach(id => document.getElementById(id).value = "");
+        document.getElementById("ph-fStatus").value = "official";
+        document.getElementById("ph-fSlug").dataset.auto = 'true';
+        document.getElementById("ph-fUid").value = PH_makeUid();
+        PH_clearSpecs();
+        document.getElementById('ph-imgPreview').style.display = 'none';
+        document.getElementById("ph-formTitle").textContent = "Add New Phone";
+        document.getElementById("ph-submitBtn").innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Phone`;
+        PH_editingKey = null;
+      }
+
+      // ─── DELETE ──────────────────────────────────────────
+      window.PH_deleteItem = async function(key) {
+        const p = allPhones[key];
+        if (!confirm(`Delete "${p?.name || key}"? This cannot be undone.`)) return;
+        try {
+          await remove(ref(db, 'phones/' + key));
+          delete allPhones[key];
+          PH_renderItems();
+          showToast("Phone deleted.", "success");
+        } catch(e) {
+          showToast("Error: " + e.message, "error-t");
+        }
+      };
+
+      // ─── INIT ─────────────────────────────────────────────
+      PH_loadBrandsList();
+
+    })();
+
+    
+
+    // === STATIONS ===
+    (function() {
+      var db = _db_stations;
+      var auth = _auth;
+      let ST_allStations = {};
+        let ST_editingKey  = null;
+
+        // ─── AUTH CHECK ──────────────────────────────────────
+
+        // ─── AUTO KEY GENERATOR ─────────────────────────────
+        function ST_getNextKey() {
+          const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+          let suffix = "";
+          for (let i = 0; i < 8; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
+          const key = "s_" + suffix;
+          // collision check
+          return ST_allStations[key] ? ST_getNextKey() : key;
+        }
+
+        // Show auto key when adding
+        function ST_updateAutoKey() {
+          if (!ST_editingKey) {
+            document.getElementById("st-fKey").value = ST_getNextKey();
+          }
+        }
+
+        // ─── LOAD stations ──────────────────────────────────
+        window.ST_loadStations = async function() {
+          const btn = document.getElementById("st-refreshBtn");
+          btn.classList.add("loading");
+          try {
+            const snap = await get(child(ref(db), "stations"));
+            ST_allStations = snap.exists() ? snap.val() : {};
+            ST_renderStations(ST_allStations);
+            ST_updateAutoKey();
+          } catch(e) {
+            showToast("Failed to load: " + e.message, "error-t");
+          }
+          btn.classList.remove("loading");
+        };
+
+        function ST_renderStations(data) {
+          const list = document.getElementById("st-stationList");
+          const entries = Object.entries(data).sort((a, b) => (b[1].id || 0) - (a[1].id || 0));
+          document.getElementById("st-stationCount").textContent = entries.length + " station" + (entries.length !== 1 ? "s" : "");
+          createPager(entries, list, "st-sentinel",
+            ([key, s]) => {
+              const imgTag = s.img
+                ? `<img class="si-thumb" src="${ST_esc(s.img)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""/><div class="si-thumb-placeholder" style="display:none;">📻</div>`
+                : `<div class="si-thumb-placeholder">📻</div>`;
+              return `<div class="station-item">${imgTag}<div class="si-info"><div class="si-name">${ST_esc(s.name || key)}</div><div class="si-meta"><span class="si-id">#${s.id || "—"}</span>${s.desc ? `<span style="margin-left:0.4rem;">${ST_esc(s.desc)}</span>` : ""}</div></div><div class="si-actions"><button class="si-btn edit" onclick="ST_editStation('${key}')">Edit</button><button class="si-btn del" style="color:#e53e3e;border-color:#e53e3e;" onclick="ST_deleteStation('${key}')">Delete</button></div></div>`;
+            },
+            `<div class="empty-state"><div class="empty-icon">📻</div>No stations yet. Add one above!</div>`
+          );
+        }
+
+        function ST_esc(str) {
+          if (!str) return "";
+          return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+        }
+
+        // ─── SEARCH ─────────────────────────────────────────
+        window.ST_filterStations = function() {
+          const q = document.getElementById("st-searchInput").value.toLowerCase();
+          if (!q) { ST_renderStations(ST_allStations); return; }
+          const filtered = {};
+          Object.entries(ST_allStations).forEach(([k, v]) => {
+            if ((v.name||"").toLowerCase().includes(q) || k.toLowerCase().includes(q) || (v.url||"").toLowerCase().includes(q)) {
+              filtered[k] = v;
+            }
+          });
+          ST_renderStations(filtered);
+        };
+
+        // ─── SUBMIT (add / update) ──────────────────────────
+        window.ST_submitStation = async function() {
+          const id   = parseInt(document.getElementById("st-fId").value) || 0;
+          const key  = ST_editingKey || ST_getNextKey();
+          const name = document.getElementById("st-fName").value.trim();
+          const url  = document.getElementById("st-fUrl").value.trim();
+          const img  = document.getElementById("st-fImg").value.trim();
+          const desc = document.getElementById("st-fDesc").value.trim();
+          const seo  = document.getElementById("st-fSeo").value.trim();
+
+          if (!name) { showToast("Name is required!", "error-t"); return; }
+
+          const btn = document.getElementById("st-submitBtn");
+          btn.disabled = true;
+          btn.textContent = "Saving...";
+
+          try {
+            await set(ref(db, "stations/" + key), { id, name, url, img, desc, seo });
+            ST_allStations[key] = { id, name, url, img, desc, seo };
+            ST_renderStations(ST_allStations);
+            const wasEditing = !!ST_editingKey;
+            ST_editingKey = null;
+            ST_clearForm();
+            showToast(wasEditing ? "Station updated!" : "Station added!", "success");
+          } catch(e) {
+            showToast("Error: " + e.message, "error-t");
+          }
+
+          btn.disabled = false;
+          btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Station`;
+        };
+
+        // ─── EDIT ────────────────────────────────────────────
+        window.ST_editStation = function(key) {
+          const s = ST_allStations[key];
+          if (!s) return;
+          ST_editingKey = key;
+
+          document.getElementById("st-fId").value   = s.id   || "";
+          document.getElementById("st-fKey").value  = key;
+          document.getElementById("st-fName").value = s.name || "";
+          document.getElementById("st-fUrl").value  = s.url  || "";
+          document.getElementById("st-fImg").value  = s.img  || "";
+          document.getElementById("st-fDesc").value = s.desc || "";
+          document.getElementById("st-fSeo").value  = s.seo  || "";
+
+          document.getElementById("st-formTitle").textContent = "Edit Station — " + key;
+          document.getElementById("st-submitBtn").innerHTML = `✎ Update Station`;
+          document.getElementById("st-cancelBtn").style.display = "inline-flex";
+          document.getElementById("st-addCard").scrollIntoView({ behavior: "smooth" });
+        };
+
+        window.ST_cancelEdit = function() {
+          ST_editingKey = null;
+          ST_clearForm();
+        };
+
+        function ST_clearForm() {
+          ["st-fId","st-fName","st-fUrl","st-fImg","st-fDesc","st-fSeo"].forEach(id => document.getElementById(id).value = "");
+          document.getElementById("st-formTitle").textContent = "Add New Station";
+          document.getElementById("st-submitBtn").innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Station`;
+          document.getElementById("st-cancelBtn").style.display = "none";
+          ST_editingKey = null;
+          ST_updateAutoKey();
+        }
+
+        // ─── DELETE ──────────────────────────────────────────
+        window.ST_deleteStation = async function(key) {
+          if (!confirm(`Delete "${key}"? This cannot be undone.`)) return;
+          try {
+            await remove(ref(db, "stations/" + key));
+            delete ST_allStations[key];
+            ST_renderStations(ST_allStations);
+            showToast("Station deleted.", "success");
+          } catch(e) {
+            showToast("Error: " + e.message, "error-t");
+          }
+        };
+
+        // ─── TOAST ───────────────────────────────────────────
+    })();
+
+    // === BRANDS ===
+    (function() {
+      var db = _rtdb;
+      let BR_allItems  = {};
+      let BR_editingKey  = null;
+
+      function BR_esc(str) {
+        if (!str) return "";
+        return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+      }
+
+      function BR_makeUid() {
+        const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+        let s = "";
+        for (let i = 0; i < 6; i++) s += chars[Math.floor(Math.random() * chars.length)];
+        return s;
+      }
+
+      window.BR_genUid = function() {
+        document.getElementById("br-fUid").value = BR_makeUid();
+      };
+
+      // ─── LOAD ──────────────────────────────────────────────
+      window.BR_loadAll = async function() {
+        const btn = document.getElementById("br-refreshBtn");
+        btn.classList.add("loading");
+        try {
+          const snap = await get(child(ref(db), 'brands'));
+          BR_allItems = snap.exists() ? snap.val() : {};
+          BR_renderItems(BR_allItems);
+          if (!BR_editingKey && !document.getElementById("br-fUid").value) {
+            document.getElementById("br-fUid").value = BR_makeUid();
+          }
+        } catch(e) {
+          showToast("Failed to load: " + e.message, "error-t");
+        }
+        btn.classList.remove("loading");
+      };
+
+      // ─── RENDER ────────────────────────────────────────────
+      function BR_renderItems(data) {
+        const list = document.getElementById("br-itemList");
+        const q = (document.getElementById("br-searchInput").value || "").toLowerCase();
+        let entries = Object.entries(data).filter(([,a]) =>
+          !q || (a.title||"").toLowerCase().includes(q) || (a.desc||"").toLowerCase().includes(q)
+        ).sort((a,b) => (parseInt(b[1].id)||0) - (parseInt(a[1].id)||0));
+        document.getElementById("br-itemCount").textContent = entries.length + " brand" + (entries.length !== 1 ? "s" : "");
+        createPager(entries, list, "br-sentinel",
+          ([key, a]) => {
+            const imgTag = a.img
+              ? `<img class="li-thumb" src="${BR_esc(a.img)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""/><div class="li-thumb-placeholder" style="display:none;">🏷️</div>`
+              : `<div class="li-thumb-placeholder">🏷️</div>`;
+            return `<div class="list-item">${imgTag}<div class="li-info"><div class="li-name">${BR_esc(a.title || key)}</div><div class="li-meta"><span class="li-id">#${BR_esc(String(a.id||"—"))}</span>${a.slug ? `<span class="li-cat">${BR_esc(a.slug)}</span>` : ""}</div></div><div class="li-actions"><button class="si-btn edit" onclick="BR_editItem('${BR_esc(key)}')">Edit</button><button class="si-btn del" style="color:#e53e3e;border-color:#e53e3e;" onclick="BR_deleteItem('${BR_esc(key)}')">Delete</button></div></div>`;
+          },
+          `<div class="empty-state"><div class="empty-icon">🏷️</div>No brands yet. Add one above!</div>`
+        );
+      }
+
+      window.BR_filterItems = function() { BR_renderItems(BR_allItems); };
+
+      // ─── SUBMIT ────────────────────────────────────────────
+      window.BR_submitBrand = async function() {
+        const uid     = (document.getElementById("br-fUid").value.trim() || BR_makeUid()).replace(/[^a-zA-Z0-9_-]/g, "");
+        const id      = parseInt(document.getElementById("br-fId").value) || 0;
+        const title   = document.getElementById("br-fTitle").value.trim();
+        const slug    = document.getElementById("br-fSlug").value.trim() || title.toLowerCase().replace(/[^\w\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').trim();
+        const img     = document.getElementById("br-fImg").value.trim();
+        const desc    = document.getElementById("br-fDesc").value.trim();
+
+        if (!title) { showToast("Name is required!", "error-t"); return; }
+
+        const btn = document.getElementById("br-submitBtn");
+        btn.disabled = true; btn.textContent = "Saving...";
+
+        try {
+          const key  = BR_editingKey || uid;
+          const data = { uid, id, title, slug, img, desc, createdAt: Date.now() };
+          await set(ref(db, 'brands/' + key), data);
+          BR_allItems[key] = data;
+          showToast(BR_editingKey ? "Brand updated!" : "Brand added!", "success");
+          BR_editingKey = null;
+          BR_clearForm();
+          BR_renderItems(BR_allItems);
+        } catch(e) {
+          showToast("Error: " + e.message, "error-t");
+        }
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Brand`;
+      };
+
+      // ─── EDIT ──────────────────────────────────────────────
+      window.BR_editItem = function(key) {
+        const a = BR_allItems[key]; if (!a) return;
+        BR_editingKey = key;
+        document.getElementById("br-fUid").value   = a.uid   || "";
+        document.getElementById("br-fId").value    = a.id    || "";
+        document.getElementById("br-fTitle").value = a.title || "";
+        document.getElementById("br-fSlug").value  = a.slug  || "";
+        document.getElementById("br-fImg").value   = a.img   || "";
+        document.getElementById("br-fDesc").value  = a.desc  || "";
+        if (a.img) {
+          document.getElementById('br-imgThumb').src = a.img;
+          document.getElementById('br-imgPreview').style.display = 'block';
+        }
+        document.getElementById("br-formTitle").textContent = "Edit Brand — " + (a.title || key);
+        document.getElementById("br-submitBtn").innerHTML   = `✎ Update Brand`;
+        document.getElementById("br-addCard").scrollIntoView({ behavior: "smooth" });
+      };
+
+      window.BR_cancelEdit = function() { BR_editingKey = null; BR_clearForm(); };
+
+      function BR_clearForm() {
+        ["br-fUid","br-fId","br-fTitle","br-fSlug","br-fImg","br-fDesc"].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = "";
+        });
+        document.getElementById('br-imgPreview').style.display = 'none';
+        document.getElementById("br-formTitle").textContent = "Add New Brand";
+        document.getElementById("br-submitBtn").innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Brand`;
+        BR_editingKey = null;
+        document.getElementById("br-fUid").value = BR_makeUid();
+      }
+
+      // ─── DELETE ────────────────────────────────────────────
+      window.BR_deleteItem = async function(key) {
+        const a = BR_allItems[key];
+        if (!confirm(`Delete "${a?.title || key}"? This cannot be undone.`)) return;
+        try {
+          await remove(ref(db, 'brands/' + key));
+          delete BR_allItems[key];
+          BR_renderItems(BR_allItems);
+          showToast("Brand deleted.", "success");
+        } catch(e) {
+          showToast("Error: " + e.message, "error-t");
+        }
+      };
+
+    })();
+
+    // === PODCAST_CATEGORY ===
+    (function() {
+      var db = _db_podcast_category;
+      var auth = _auth;
+      let PC_allItems   = {};
+        let PC_editingKey = null;
+
+        function PC_getNextKey() {
+          const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+          let suffix = "";
+          for (let i = 0; i < 8; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
+          const key = "cat_" + suffix;
+          return PC_allItems[key] ? PC_getNextKey() : key;
+        }
+
+        function PC_updateAutoKey() {
+          if (!PC_editingKey) document.getElementById("pc-fKey").value = PC_getNextKey();
+        }
+
+        window.PC_loadCategories = async function() {
+          const btn = document.getElementById("pc-refreshBtn");
+          btn.classList.add("loading");
+          try {
+            const snap = await get(child(ref(db), "podcasts"));
+            PC_allItems = snap.exists() ? snap.val() : {};
+            PC_renderItems(PC_allItems);
+            PC_updateAutoKey();
+          } catch(e) {
+            showToast("Failed to load: " + e.message, "error-t");
+          }
+          btn.classList.remove("loading");
+        };
+
+        function PC_renderItems(data) {
+          const list = document.getElementById("pc-itemList");
+          const entries = Object.entries(data).sort((a, b) => (b[1].id || 0) - (a[1].id || 0));
+          document.getElementById("pc-itemCount").textContent = entries.length + " categor" + (entries.length !== 1 ? "ies" : "y");
+          createPager(entries, list, "pc-sentinel",
+            ([key, s]) => {
+              const imgTag = s.img
+                ? `<img class="li-thumb" src="${PC_esc(s.img)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""/><div class="li-thumb-placeholder" style="display:none;">🎙️</div>`
+                : `<div class="li-thumb-placeholder">🎙️</div>`;
+              return `<div class="list-item">${imgTag}<div class="li-info"><div class="li-name">${PC_esc(s.title || key)}</div><div class="li-meta"><span class="li-id">#${s.id || "—"}</span>${s.desc ? `<span>${PC_esc(s.desc)}</span>` : ""}</div></div><div class="li-actions"><button class="si-btn edit" onclick="PC_editItem('${key}')">Edit</button><button class="si-btn del" style="color:#e53e3e;border-color:#e53e3e;" onclick="PC_deleteItem('${key}')">Delete</button></div></div>`;
+            },
+            `<div class="empty-state"><div class="empty-icon">🎙️</div>No categories yet. Add one above!</div>`
+          );
+        }
+
+        function PC_esc(str) {
+          if (!str) return "";
+          return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+        }
+
+        window.PC_filterItems = function() {
+          const q = document.getElementById("pc-searchInput").value.toLowerCase();
+          if (!q) { PC_renderItems(PC_allItems); return; }
+          const filtered = {};
+          Object.entries(PC_allItems).forEach(([k, v]) => {
+            if ((v.title||"").toLowerCase().includes(q) || k.toLowerCase().includes(q)) filtered[k] = v;
+          });
+          PC_renderItems(filtered);
+        };
+
+        window.PC_submitCategory = async function() {
+          const id    = parseInt(document.getElementById("pc-fId").value) || 0;
+          const key   = PC_editingKey || PC_getNextKey();
+          const title = document.getElementById("pc-fTitle").value.trim();
+          const img   = document.getElementById("pc-fImg").value.trim();
+          const cover = document.getElementById("pc-fCover").value.trim();
+          const desc  = document.getElementById("pc-fDesc").value.trim();
+          const seo   = document.getElementById("pc-fSeo").value.trim();
+
+          if (!title) { showToast("Title is required!", "error-t"); return; }
+
+          const btn = document.getElementById("pc-submitBtn");
+          btn.disabled = true; btn.textContent = "Saving...";
+
+          try {
+            await set(ref(db, "podcasts/" + key), { id, title, img, cover, desc, seo });
+            PC_allItems[key] = { id, title, img, cover, desc, seo };
+            PC_renderItems(PC_allItems);
+            const wasEditing = !!PC_editingKey;
+            PC_editingKey = null;
+            PC_clearForm();
+            showToast(wasEditing ? "Category updated!" : "Category added!", "success");
+          } catch(e) {
+            showToast("Error: " + e.message, "error-t");
+          }
+
+          btn.disabled = false;
+          btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Category`;
+        };
+
+        window.PC_editItem = function(key) {
+          const s = PC_allItems[key];
+          if (!s) return;
+          PC_editingKey = key;
+          document.getElementById("pc-fId").value    = s.id    || "";
+          document.getElementById("pc-fKey").value   = key;
+          document.getElementById("pc-fTitle").value = s.title || "";
+          document.getElementById("pc-fImg").value   = s.img   || "";
+          document.getElementById("pc-fCover").value = s.cover || "";
+          document.getElementById("pc-fDesc").value  = s.desc  || "";
+          document.getElementById("pc-fSeo").value   = s.seo   || "";
+          document.getElementById("pc-formTitle").textContent = "Edit Category — " + key;
+          document.getElementById("pc-submitBtn").innerHTML = `✎ Update Category`;
+          document.getElementById("pc-cancelBtn").style.display = "inline-flex";
+          document.getElementById("pc-addCard").scrollIntoView({ behavior: "smooth" });
+        };
+
+        window.PC_cancelEdit = function() { PC_editingKey = null; PC_clearForm(); };
+
+        function PC_clearForm() {
+          ["pc-fId","pc-fTitle","pc-fImg","pc-fCover","pc-fDesc","pc-fSeo"].forEach(id => document.getElementById(id).value = "");
+          document.getElementById("pc-formTitle").textContent = "Add New Category";
+          document.getElementById("pc-submitBtn").innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Category`;
+          document.getElementById("pc-cancelBtn").style.display = "none";
+          PC_editingKey = null;
+          PC_updateAutoKey();
+        }
+
+        window.PC_deleteItem = async function(key) {
+          if (!confirm(`Delete "${key}"? This cannot be undone.`)) return;
+          try {
+            await remove(ref(db, "podcasts/" + key));
+            delete PC_allItems[key];
+            PC_renderItems(PC_allItems);
+            showToast("Category deleted.", "success");
+          } catch(e) {
+            showToast("Error: " + e.message, "error-t");
+          }
+        };
+    })();
+
+    // === MEDIA ===
+    (function() {
+      var db = _db_media;
+      var auth = _auth;
+
+      // ── ImageKit config ──────────────────────────────────────────────────
+      const IK_URL_ENDPOINT = 'https://ik.imagekit.io/physarif';
+      const IK_PUBLIC_KEY   = 'public_CpRK+/MqsM9Lse/zC8UrBpfaMhA=';
+      const IK_PRIVATE_KEY  = 'private_m5yiobK6zEUfaFzBQ5HROa8oT78=';
+      const IK_UPLOAD_URL   = 'https://upload.imagekit.io/api/v1/files/upload';
+      const IK_DELETE_URL   = 'https://api.imagekit.io/v1/files';
+      const IK_FOLDER       = '/pathokghar';
+
+      // ── ImageKit auth signature (HMAC-SHA1) ─────────────────────────────
+      async function _ikHmacSha1Hex(key, message) {
+        const enc = new TextEncoder();
+        const cryptoKey = await crypto.subtle.importKey('raw', enc.encode(key), { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']);
+        const sig = await crypto.subtle.sign('HMAC', cryptoKey, enc.encode(message));
+        return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2,'0')).join('');
+      }
+
+      async function _ikGetAuthParams() {
+        const token  = crypto.randomUUID();
+        const expire = Math.floor(Date.now() / 1000) + 600; // 10 min
+        const signature = await _ikHmacSha1Hex(IK_PRIVATE_KEY, token + expire);
+        return { token, expire, signature };
+      }
+
+        // ── Helpers ──────────────────────────────────────────────────────────
+        function MD_fmtSize(b) {
+          if (!b) return '';
+          if (b < 1024) return b + ' B';
+          if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+          return (b / 1048576).toFixed(1) + ' MB';
+        }
+
+        function MD_getType(mime = '', name = '') {
+          if (mime.startsWith('image/')) return 'image';
+          if (mime.startsWith('video/')) return 'video';
+          if (mime.startsWith('audio/')) return 'audio';
+          if (mime.includes('pdf') || mime.includes('word') || mime.includes('document') || name.endsWith('.pdf')) return 'doc';
+          return 'other';
+        }
+
+        const emoji = { image: '🖼️', video: '🎬', audio: '🎵', doc: '📄', other: '📁' };
+
+        function MD_timeAgo(ts) {
+          if (!ts) return '';
+          const m = Math.floor((Date.now() - ts) / 60000);
+          if (m < 1) return 'Just now';
+          if (m < 60) return `${m}m ago`;
+          const h = Math.floor(m / 60);
+          if (h < 24) return `${h}h ago`;
+          return `${Math.floor(h / 24)}d ago`;
+        }
+
+        // ── DOM ──────────────────────────────────────────────────────────────
+        const $ = id => document.getElementById(id);
+        const dropzone      = $('md-dropzone');
+        const fileInput     = $('md-fileInput');
+        const queueList     = $('md-queueList');
+        const queueSummary  = $('md-queueSummary');
+        const uploadAllBtn  = $('md-uploadAllBtn');
+        const errorMsg      = $('md-errorMsg');
+        const fileList      = $('md-fileList');
+        const libCount      = $('md-libCount');
+        const libStorage    = $('md-libStorage');
+        const refreshBtn    = $('md-refreshBtn');
+        const scrollLoader  = $('md-scrollLoader');
+        const searchInput   = $('md-searchInput');
+        const searchClear   = $('searchClear');
+
+        // MD_queue: [{ file, id, status: 'pending'|'uploading'|'done'|'error', progress, url }]
+        let MD_queue = [];
+        let MD_isUploading = false;
+        let currentFilter = 'all';
+        let MD_allFiles = [];
+        let MD_allFilesFull = [];
+        const PAGE_SIZE = 10;
+        let loadedCount = 0;
+        let hasMore = false;
+        let isLoadingMore = false;
+
+        // ── Pick files ────────────────────────────────────────────────────────
+        dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', e => {
+          e.preventDefault(); dropzone.classList.remove('dragover');
+          if (e.dataTransfer.files.length) MD_addToQueue(Array.from(e.dataTransfer.files));
+        });
+        fileInput.addEventListener('change', () => {
+          if (fileInput.files.length) MD_addToQueue(Array.from(fileInput.files));
+          fileInput.value = '';
+        });
+
+        function MD_addToQueue(files) {
+          files.forEach(f => {
+            const baseName = f.name.replace(/\.[^/.]+$/, '');
+            MD_queue.push({ file: f, id: Math.random().toString(36).slice(2), status: 'pending', progress: 0, url: null, customName: baseName });
+          });
+          MD_renderQueue();
+          MD_hideError();
+        }
+
+        function MD_renderQueue() {
+          if (!MD_queue.length) {
+            queueList.innerHTML = '';
+            queueSummary.textContent = '';
+            uploadAllBtn.disabled = true;
+            $('md-fileLabel').textContent = 'No files chosen';
+            return;
+          }
+          const pending = MD_queue.filter(q => q.status === 'pending').length;
+          const done    = MD_queue.filter(q => q.status === 'done').length;
+          const total   = MD_queue.length;
+          $('md-fileLabel').textContent = total + ' file' + (total !== 1 ? 's' : '') + ' selected';
+          uploadAllBtn.disabled = MD_isUploading || pending === 0;
+          if (pending === 0 && done > 0) {
+            uploadAllBtn.textContent = '✓ All uploaded — Add more files';
+            uploadAllBtn.disabled = false;
+          } else {
+            uploadAllBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Upload`;
+          }
+
+          const doneCount  = MD_queue.filter(q => q.status === 'done').length;
+          const errCount   = MD_queue.filter(q => q.status === 'error').length;
+          if (total > 1) {
+            queueSummary.textContent = doneCount + ' / ' + total + ' uploaded' + (errCount ? ' · ' + errCount + ' failed' : '');
+          } else {
+            queueSummary.textContent = '';
+          }
+
+          queueList.innerHTML = MD_queue.map(item => {
+            const t = MD_getType(item.file.type, item.file.name);
+            const barClass = item.status === 'done' ? 'done' : item.status === 'error' ? 'error' : '';
+            const statusText = item.status === 'pending' ? MD_fmtSize(item.file.size)
+              : item.status === 'uploading' ? 'Uploading ' + item.progress + '%…'
+              : item.status === 'done' ? 'Done'
+              : 'Failed';
+            const copyShow = item.status === 'done' ? 'show' : '';
+            const url = item.url || '';
+            const nameDisplay = item.status === 'pending'
+              ? `<input class="qi-name-input" type="text" value="${MD_esc(item.customName)}" placeholder="File name" onchange="MD_updateQueueName('${item.id}', this.value)" oninput="MD_updateQueueName('${item.id}', this.value)"/>`
+              : `<div class="qi-name">${MD_esc(item.customName || item.file.name.replace(/\.[^/.]+$/, ''))}</div>`;
+            return `<div class="MD_queue-item ${item.status}" data-qid="${item.id}">
+              <div class="qi-emoji">${emoji[t] || '📁'}</div>
+              <div class="qi-info">
+                ${nameDisplay}
+                <div class="qi-bar-wrap"><div class="qi-bar ${barClass}" style="width:${item.status==='done'?100:item.status==='uploading'?item.progress:0}%"></div></div>
+                <div class="qi-status">${statusText}</div>
+              </div>
+              <button class="qi-copy ${copyShow}" onclick="MD_qiCopy(this,'${url}')">Copy URL</button>
+              ${item.status !== 'uploading' ? `<button class="qi-remove" onclick="MD_removeFromQueue('${item.id}')">✕</button>` : ''}
+            </div>`;
+          }).join('');
+        }
+
+        function MD_esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+        window.MD_removeFromQueue = (id) => {
+          MD_queue = MD_queue.filter(q => q.id !== id);
+          MD_renderQueue();
+        };
+
+        window.MD_updateQueueName = (id, val) => {
+          const item = MD_queue.find(q => q.id === id);
+          if (item) item.customName = val.trim();
+        };
+
+        window.MD_qiCopy = (btn, url) => {
+          MD_copyText(url, () => {
+            btn.textContent = 'Copied!'; btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = 'Copy URL'; btn.classList.remove('copied'); }, 2000);
+          });
+        };
+
+        // ── Upload All ────────────────────────────────────────────────────────
+        uploadAllBtn.addEventListener('click', () => {
+          // If all done, clear MD_queue and reset to fresh state
+          const pending = MD_queue.filter(q => q.status === 'pending').length;
+          if (pending === 0) {
+            MD_queue = [];
+            queueList.innerHTML = '';
+            queueSummary.textContent = '';
+            $('md-fileLabel').textContent = 'No files chosen';
+            uploadAllBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Upload`;
+            uploadAllBtn.disabled = true;
+            MD_loadLibrary();
+            return;
+          }
+          MD_startUploadQueue();
+        });
+
+        async function MD_startUploadQueue() {
+          MD_isUploading = true;
+          uploadAllBtn.disabled = true;
+          MD_hideError();
+          const pendingItems = MD_queue.filter(q => q.status === 'pending');
+          for (const item of pendingItems) {
+            await MD_uploadItem(item);
+          }
+          MD_isUploading = false;
+          MD_renderQueue();
+          MD_loadLibrary();
+        }
+
+        function MD_uploadItem(item) {
+          return MD_uploadItemImageKit(item);
+        }
+
+        // ── ImageKit upload ──────────────────────────────────────────────
+        function MD_uploadItemImageKit(item) {
+          return new Promise(async resolve => {
+            item.status = 'uploading';
+            item.progress = 0;
+            MD_renderQueue();
+
+            try {
+              const file = item.file;
+
+              // 1. Generate short-lived auth params locally
+              const { token, expire, signature } = await _ikGetAuthParams();
+
+              const fileName = (item.customName && item.customName.trim())
+                ? item.customName.trim()
+                : file.name;
+
+              // 2. Build multipart form for ImageKit's direct upload API
+              const form = new FormData();
+              form.append('file', file);
+              form.append('fileName', fileName);
+              form.append('publicKey', IK_PUBLIC_KEY);
+              form.append('signature', signature);
+              form.append('expire', expire);
+              form.append('token', token);
+              form.append('useUniqueFileName', 'true');
+              form.append('folder', IK_FOLDER);
+
+              // 3. XHR upload with progress
+              const xhr = new XMLHttpRequest();
+              xhr.open('POST', IK_UPLOAD_URL);
+
+              xhr.upload.onprogress = e => {
+                if (e.lengthComputable) {
+                  item.progress = Math.round(e.loaded / e.total * 100);
+                  MD_renderQueue();
+                }
+              };
+
+              xhr.onload = async () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                  let resp;
+                  try { resp = JSON.parse(xhr.responseText); } catch(e) { resp = {}; }
+                  const publicUrl = resp.url;
+                  item.url = publicUrl;
+                  item.status = 'done';
+                  try {
+                    const mediaRef = push(ref(db, 'media'));
+                    await set(mediaRef, {
+                      name: (item.customName && item.customName.trim()) ? item.customName.trim() : file.name.replace(/\.[^/.]+$/, ''),
+                      url: publicUrl,
+                      type: MD_getType(file.type, file.name),
+                      mimeType: file.type,
+                      size: file.size,
+                      ikFileId: resp.fileId || '',
+                      provider: 'imagekit',
+                      createdAt: Date.now(),
+                    });
+                  } catch(e) { console.error(e); }
+                } else {
+                  item.status = 'error';
+                  item.errorMsg = 'Upload failed (' + xhr.status + ')';
+                }
+                MD_renderQueue();
+                resolve();
+              };
+
+              xhr.onerror = () => { item.status = 'error'; item.errorMsg = 'Network error'; MD_renderQueue(); resolve(); };
+              xhr.send(form);
+
+            } catch(err) {
+              item.status = 'error';
+              item.errorMsg = err.message || 'Upload error';
+              MD_renderQueue();
+              resolve();
+            }
+          });
+        }
+
+
+        function MD_copyText(text, onSuccess) {
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(onSuccess).catch(() => MD_fallbackCopy(text, onSuccess));
+          } else {
+            MD_fallbackCopy(text, onSuccess);
+          }
+        }
+
+        function MD_fallbackCopy(text, onSuccess) {
+          const el = document.createElement('textarea');
+          el.value = text;
+          el.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+          document.body.appendChild(el);
+          el.focus(); el.select();
+          try { document.execCommand('copy'); onSuccess(); } catch(e) { showToast('Copy failed'); }
+          document.body.removeChild(el);
+        }
+
+        function MD_showError(m) { errorMsg.textContent = m; errorMsg.style.display = 'block'; }
+        function MD_hideError()  { errorMsg.style.display = 'none'; }
+
+        // ── Library ──────────────────────────────────────────────────────────
+        function MD_showSkeletons() {
+          fileList.innerHTML = Array(5).fill(`
+            <div class="sk-item">
+              <div class="sk-box sk-sq"></div>
+              <div class="sk-lines" style="flex:1">
+                <div class="sk-box sk-l"></div>
+                <div class="sk-box sk-l s"></div>
+              </div>
+            </div>`).join('');
+        }
+
+        let totalStorageBytes = 0;
+        let totalFileCount = 0;
+
+        async function MD_loadLibrary() {
+          refreshBtn.classList.add('loading');
+          MD_showSkeletons(); libCount.textContent = '—'; libStorage.textContent = '—';
+          MD_allFiles = []; MD_allFilesFull = []; loadedCount = 0; hasMore = false;
+          try {
+            const snap = await get(child(ref(db), 'media'));
+            const data = snap.exists() ? snap.val() : {};
+            MD_allFilesFull = Object.keys(data)
+              .map(id => ({ id, ...data[id] }))
+              .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            totalFileCount = MD_allFilesFull.length;
+            totalStorageBytes = MD_allFilesFull.reduce((sum, d) => sum + (d.size || 0), 0);
+            loadedCount = Math.min(PAGE_SIZE, MD_allFilesFull.length);
+            MD_allFiles = MD_allFilesFull.slice(0, loadedCount);
+            hasMore = loadedCount < MD_allFilesFull.length;
+            MD_renderList();
+          } catch(e) {
+            fileList.innerHTML = `<div class="lib-empty"><span>⚠️</span>Could not load files.</div>`;
+          }
+          refreshBtn.classList.remove('loading');
+        }
+
+        function MD_renderItem(f) {
+          return `<div class="file-item" data-id="${f.id}">
+              ${f.type === 'image'
+                ? `<div class="fi-thumb-wrap"><img class="fi-thumb" src="${f.url}" alt="${f.name}" loading="lazy"/></div>`
+                : `<div class="fi-icon">${emoji[f.type] || '📁'}</div>`
+              }
+              <div class="fi-info">
+                <div class="fi-name" onclick="MD_startEdit(this,'${f.id}','${f.name.replace(/'/g,"&#39;")}')">${f.name}</div>
+                <div class="fi-meta">${MD_fmtSize(f.size)} · ${MD_timeAgo(f.createdAt)}</div>
+              </div>
+              <div class="fi-actions">
+                <button class="fi-copy" onclick="MD_doCopy(this,'${f.url}')">Copy</button>
+                <button class="fi-copy" onclick="MD_toggleDelete(this,'${f.id}')" style="color:var(--error);border-color:var(--error);">Delete</button>
+              </div>
+            </div>`;
+        }
+
+        async function MD_loadMore() {
+          if (!hasMore || isLoadingMore) return;
+          isLoadingMore = true;
+          try {
+            const nextCount = Math.min(loadedCount + PAGE_SIZE, MD_allFilesFull.length);
+            const newFiles = MD_allFilesFull.slice(loadedCount, nextCount);
+            MD_allFiles = [...MD_allFiles, ...newFiles];
+            loadedCount = nextCount;
+            hasMore = loadedCount < MD_allFilesFull.length;
+            // append only new items — do not replace entire list
+            const frag = document.createDocumentFragment();
+            newFiles.forEach(f => {
+              const tmp = document.createElement('div');
+              tmp.innerHTML = MD_renderItem(f);
+              frag.appendChild(tmp.firstElementChild);
+            });
+            fileList.appendChild(frag);
+            const loader = document.getElementById('md-scrollLoader');
+            if (loader) loader.style.display = hasMore ? 'block' : 'none';
+          } catch(e) { console.error(e); }
+          isLoadingMore = false;
+        }
+
+        // IntersectionObserver — auto load when sentinel is visible
+        const _mdObserver = new IntersectionObserver(entries => {
+          if (entries[0].isIntersecting) MD_loadMore();
+        }, { threshold: 0.1 });
+        _mdObserver.observe(document.getElementById('md-scrollLoader'));
+
+        function MD_renderList() {
+          const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+          const typeAliases = {
+            image: ['image', 'photo', 'picture', 'img', 'photo'],
+            video: ['video', 'film', 'movie', 'video'],
+            audio: ['audio', 'music', 'sound', 'song', 'audio', 'song'],
+            doc:   ['doc', 'document', 'pdf', 'file', 'document'],
+          };
+          const matchedType = q ? Object.keys(typeAliases).find(t => typeAliases[t].some(a => a.includes(q) || q.includes(a))) : null;
+          const list = MD_allFiles.filter(f => {
+            if (!q) return true;
+            if (matchedType) return f.type === matchedType;
+            return (f.name || '').toLowerCase().includes(q);
+          });
+          libCount.textContent = totalFileCount + ' file' + (totalFileCount !== 1 ? 's' : '');
+          libStorage.textContent = MD_fmtSize(totalStorageBytes) + ' used';
+
+          const loader = document.getElementById("md-scrollLoader");
+          if (loader) loader.style.display = hasMore ? 'block' : 'none';
+
+          if (!list.length) {
+            fileList.innerHTML = `<div class="lib-empty"><span>${currentFilter === 'all' ? '📭' : '🔍'}</span>${currentFilter === 'all' ? 'No files yet.' : 'No files in this category.'}</div>`;
+            return;
+          }
+
+          fileList.innerHTML = list.map(f => MD_renderItem(f)).join('');
+        }
+
+        window.MD_doCopy = (btn, url) => {
+          MD_copyText(url, () => {
+            btn.textContent = 'Copied!'; btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+          });
+        };
+
+        window.MD_toggleDelete = async (btnEl, id) => {
+          const fileData = MD_allFiles.find(f => f.id === id);
+          if (!confirm(`"${fileData?.name || id}" ফাইলটি মুছে ফেলবেন?`)) return;
+
+          if (fileData?.ikFileId) {
+              try {
+                await fetch(`${IK_DELETE_URL}/${fileData.ikFileId}`, {
+                  method: 'DELETE',
+                  headers: { 'Authorization': 'Basic ' + btoa(IK_PRIVATE_KEY + ':') },
+                });
+              } catch(e) { console.warn('ImageKit delete error:', e); }
+            }
+            remove(ref(db, 'media/' + id)).then(() => {
+              const deleted = MD_allFiles.find(f => f.id === id);
+              if (deleted) {
+                totalStorageBytes = Math.max(0, totalStorageBytes - (deleted.size || 0));
+                totalFileCount = Math.max(0, totalFileCount - 1);
+              }
+              MD_allFiles = MD_allFiles.filter(f => f.id !== id);
+              MD_allFilesFull = MD_allFilesFull.filter(f => f.id !== id);
+              loadedCount = Math.max(0, loadedCount - 1);
+              showToast('🗑 File deleted');
+              MD_renderList();
+            }).catch(e => console.error(e));
+        };
+
+        window.MD_startEdit = (nameEl, id, currentName) => {
+          const input = document.createElement('input');
+          input.className = 'fi-name-input';
+          input.value = currentName;
+          nameEl.replaceWith(input);
+          input.focus();
+          input.select();
+
+          const save = async () => {
+            const newName = input.value.trim() || currentName;
+            try {
+              await update(ref(db, 'media/' + id), { name: newName });
+              const f = MD_allFiles.find(f => f.id === id);
+              if (f) f.name = newName;
+              const ff = MD_allFilesFull.find(f => f.id === id);
+              if (ff) ff.name = newName;
+            } catch(e) { console.error(e); }
+            MD_renderList();
+          };
+
+          input.addEventListener('blur', save);
+          input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') input.blur();
+            if (e.key === 'Escape') { input.value = currentName; input.blur(); }
+          });
+        };
+
+        document.querySelectorAll('.ftab').forEach(b => {
+          b.addEventListener('click', () => {
+            document.querySelectorAll('.ftab').forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            currentFilter = b.dataset.filter;
+            MD_renderList();
+          });
+        });
+
+        let _mdSearchTimer = null;
+        searchInput.addEventListener('input', () => {
+          searchClear.style.display = searchInput.value ? 'block' : 'none';
+          clearTimeout(_mdSearchTimer);
+          const q = searchInput.value.trim();
+          if (!q) {
+            // no query — return to paginated view
+            MD_loadLibrary();
+            return;
+          }
+          // query exists — debounce and search across all loaded files
+          _mdSearchTimer = setTimeout(() => {
+            MD_allFiles = MD_allFilesFull;
+            hasMore = false; // disable infinite scroll in search mode
+            const loader = document.getElementById('md-scrollLoader');
+            if (loader) loader.style.display = 'none';
+            MD_renderList();
+          }, 350);
+        });
+        searchClear.addEventListener('click', () => {
+          searchInput.value = '';
+          searchClear.style.display = 'none';
+          MD_loadLibrary();
+        });
+
+        refreshBtn.addEventListener('click', MD_loadLibrary);
+
+        MD_loadLibrary();
+    })();
+
+  }
+
+
+  async function resetTrending() {
+    const btn = document.getElementById('resetTrendingBtn');
+    const status = document.getElementById('trendingResetStatus');
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+    status.textContent = 'Resetting...';
+    status.style.color = 'var(--muted)';
+    try {
+      const videosSnap = await get(child(ref(_rtdb), 'watch_videos'));
+      const epSnap = await get(child(ref(_rtdb), 'podcast_episodes'));
+      const updates = {};
+      if (videosSnap.exists()) {
+        Object.keys(videosSnap.val()).forEach(function(k) {
+          updates['watch_videos/' + k + '/weekly_views'] = 0;
+        });
+      }
+      if (epSnap.exists()) {
+        Object.keys(epSnap.val()).forEach(function(k) {
+          updates['podcast_episodes/' + k + '/weekly_plays'] = 0;
+        });
+      }
+      // Use Firebase update (multi-path)
+      const dbRef = ref(_rtdb);
+      await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js")
+        .then(({ update }) => update(dbRef, updates));
+      status.textContent = '✓ Reset successful! ' + new Date().toLocaleString('en-US');
+      status.style.color = '#4ade80';
+    } catch(e) {
+      status.textContent = '✗ Error: ' + e.message;
+      status.style.color = '#f87171';
+    }
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
+  window.resetTrending = resetTrending;
+
+
+    
+
+</script>
+</body>
+</html>
