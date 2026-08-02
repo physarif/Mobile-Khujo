@@ -65,116 +65,76 @@
   .dark .mk-section-title { color: #f3f4f6; }
   .dark .mk-section-title::after { background: #63b3ff; }
 
-  /* List container */
+  /* List container — 2-column grid card layout */
   .mk-list {
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    gap: 0.4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.7rem;
+    padding: 0 1rem;
+  }
+  @media (min-width: 640px) {
+    .mk-list { grid-template-columns: repeat(3, 1fr); gap: 0.85rem; }
   }
   @media (min-width: 768px) {
-    .mk-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.4rem;
-      padding: 0;
-    }
+    .mk-list { padding: 0 1.5rem; }
   }
 
-  @media (min-width: 768px) {
-    .mk-card:nth-child(odd) { padding-right: 0.75rem; }
-    .mk-card:nth-child(even) { padding-left: 0.75rem; }
-  }
-
-  /* Phone card — horizontal list style */
+  /* Phone card — vertical grid style */
   .mk-card {
     display: flex;
-    flex-direction: row;
-    gap: 0.85rem;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     text-decoration: none;
-    padding: 0.75rem;
-    transition: background 0.1s;
     background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.6rem;
+    padding: 0.9rem 0.6rem 1rem;
+    transition: box-shadow 0.15s, border-color 0.15s;
   }
-  .dark .mk-card { background: #23232a; }
-  .mk-card:first-child { padding-top: 0.75rem; }
-  .mk-card:last-child { padding-bottom: 0.75rem; }
-  .mk-card:hover { background: #eef7ff; }
-  .dark .mk-card:hover { background: #1e2a38; }
+  .dark .mk-card { background: #23232a; border-color: #374151; }
+  .mk-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); border-color: #dbeeff; }
+  .dark .mk-card:hover { border-color: #2d3f52; box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
 
-  /* Cover — left side, fixed size */
+  /* Cover — full width, contained */
   .mk-img-wrap {
-    flex-shrink: 0;
-    width: 5.5rem;
-    aspect-ratio: 3/4;
-    overflow: hidden;
-    background: #e5e7eb;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    width: 100%;
+    aspect-ratio: 4/5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.6rem;
   }
-  @media (min-width: 768px) { .mk-img-wrap { width: 6.5rem; } }
-  .dark .mk-img-wrap { background: #374151; }
 
   .mk-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
     display: block;
-  }
-
-  /* Right side text */
-  .mk-body {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
   }
 
   /* Headline: ফোনের নাম */
   .mk-headline {
-    font-size: 1.1rem;
-    line-height: 1.4;
-    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: #1f2937;
+    margin: 0 0 0.35rem;
     display: -webkit-box;
-    -webkit-line-clamp: 1;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .mk-title {
-    font-weight: 700;
-    color: #1e90ff;
-  }
-  .dark .mk-title { color: #63b3ff; }
-  .mk-card:hover .mk-title { text-decoration: none; }
-  .dark .mk-card:hover .mk-title { text-decoration: none; }
+  .dark .mk-headline { color: #f3f4f6; }
 
-  /* Price + brand + rating */
+  /* Price / status */
   .mk-meta {
-    font-size: 0.82rem;
-    color: #9ca3af;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #1e90ff;
     margin: 0;
   }
-  .mk-meta .mk-price {
-    color: #16a34a;
-    font-weight: 700;
-  }
-  .dark .mk-meta { color: #6b7280; }
-  .dark .mk-meta .mk-price { color: #4ade80; }
-
-  /* Short review teaser */
-  .mk-desc {
-    margin-top: 0.3rem;
-    font-size: 1.02rem;
-    color: #4b5563;
-    line-height: 1.6;
-    text-align: justify;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .dark .mk-desc { color: #9ca3af; }
+  .dark .mk-meta { color: #63b3ff; }
 
   /* Pagination */
   .mk-pagination {
@@ -230,12 +190,10 @@
     <div class="mk-img-wrap">
       <img src="{{phone_image}}" alt="{{phone_name}}" class="mk-img" loading="lazy">
     </div>
-    <div class="mk-body">
-      <p class="mk-headline"><span class="mk-title">{{phone_name}}</span></p>
-      <p class="mk-meta">{{phone_brand}} · <span class="mk-price">{{phone_price}}</span></p>
-      <p class="mk-desc">{{phone_summary}}</p>
-    </div>
+    <p class="mk-headline">{{phone_name}}</p>
+    <p class="mk-meta">{{phone_price}}</p>
   </a>
+  ("Add to Compare" আপাতত নেই — পরে যোগ করা হবে)
 -->
 
 <main class="flex-1 py-4 md:py-6 md:px-8 lg:px-16 min-h-[calc(100vh-3.5rem)] min-w-0 overflow-hidden">
