@@ -1,6 +1,6 @@
 const { initializeApp, cert, getApp } = require('firebase-admin/app');
 const { getDatabase } = require('firebase-admin/database');
-const fs = require('fs');
+const fs = require('fs'); 
 
 // Firebase env var validation 
 const REQUIRED_ENV = ['FIREBASE_PROJECT_ID', 'FIREBASE_CLIENT_EMAIL', 'FIREBASE_PRIVATE_KEY', 'FIREBASE_DATABASE_URL'];
